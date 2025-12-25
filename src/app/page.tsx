@@ -1,12 +1,15 @@
-import prisma from "@/lib/db";
+import { useTRPC } from "@/trpc/client";
 
-const Page = async () => {
-    const users = await prisma.user.findMany();
+const Page = () => {
+  const trpc = useTRPC();
+  trpc.createAI.queryOptions( {text: "Hello!"})
+
+  //localhost:3000/api/trpc/create-ai?body={"text":"hello!"}
+
     return (
         <div>
-          {JSON.stringify(users,null,2)}
+          Hello World
         </div>
     );
 };
-
 export default Page;
