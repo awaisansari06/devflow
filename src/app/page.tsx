@@ -1,15 +1,22 @@
-import { useTRPC } from "@/trpc/client";
+import { Suspense } from "react";
 
-const Page = () => {
-  const trpc = useTRPC();
-  trpc.createAI.queryOptions( {text: "Hello!"})
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-  //localhost:3000/api/trpc/create-ai?body={"text":"hello!"}
+import { getQueryClient, trpc } from "@/trpc/server";
+
+import { Client } from "./client";
+
+const Page = async () => {
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(trpc.createAI.queryOptions({ text: "Awais PREFETCH" }));
 
     return (
-        <div>
-          Hello World
-        </div>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense fallback={<p>Loading...</p>}>
+          <Client />
+        </Suspense>
+      </HydrationBoundary>
     );
 };
+
 export default Page;
