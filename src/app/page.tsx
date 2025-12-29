@@ -10,12 +10,19 @@ const Page = () => {
   const invoke = useMutation(trpc.invoke.mutationOptions({
     onSuccess: () => {
       toast.success("Background job invoked successfully");
+    },
+    onError: (err) => {
+      console.error("Mutation error:", err);
+      toast.error("Failed to invoke job: " + err.message);
+    },
+    onMutate: () => {
+      console.log("Mutation started");
     }
   }))
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      <Button disabled={invoke.isPending} onClick={() => invoke.mutate({ text: "Awais"})}> 
+      <Button disabled={invoke.isPending} onClick={() => invoke.mutate({ text: "Awais" })}>
         Invoke Background Job
       </Button>
     </div>
