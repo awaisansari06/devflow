@@ -2,34 +2,32 @@
 
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+
 import { useTRPC } from "@/trpc/client"
 import { useState } from "react";
+import { MessagesSquare } from "lucide-react";
 
 const Page = () => {
   const [value, setValue] = useState("");
 
   const trpc = useTRPC();
-  const invoke = useMutation(trpc.invoke.mutationOptions({
+  const { data: messages } = useQuery( trpc.messages.getMany.queryOptions())
+  const createMessage = useMutation(trpc.messages.createMessage.mutationOptions({
     onSuccess: () => {
-      toast.success("Background job invoked successfully");
+      toast.success("Message created");
     },
-    onError: (err) => {
-      console.error("Mutation error:", err);
-      toast.error("Failed to invoke job: " + err.message);
-    },
-    onMutate: () => {
-      console.log("Mutation started");
-    }
   }))
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
       <Input value={value} onChange={(e) => setValue(e.target.value)} />
-      <Button disabled={invoke.isPending} onClick={() => invoke.mutate({ value: value })}>
+      <Button 
+        disabled={createMessage.isPending} onClick={() => createMessage.mutate({ value: value })}>
         Invoke Background Job
       </Button>
+      {JSON.stringify(messages, null, 2)}
     </div>
   );
 };
