@@ -7,7 +7,7 @@ import { inngest } from "./client";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 
 interface AgentState {
-  summary: String;
+  summary: string;
   files: { [path: string]: string};
 }
 
@@ -171,6 +171,7 @@ export const codeAgentFunction = inngest.createFunction(
       if ( isError) {
         return await prisma.message.create({
           data: {
+            projectId: event.data.projectId,
             content: "Something went wrong. Please try again.",
             role: "ASSISTANT",
             type: "ERROR",
@@ -179,6 +180,7 @@ export const codeAgentFunction = inngest.createFunction(
       }
       return await prisma.message.create({
         data: {
+          projectId: event.data.projectId,
           content: result.state.data.summary || "Task completed with no summary.",
           role: "ASSISTANT",
           type: "RESULT",
