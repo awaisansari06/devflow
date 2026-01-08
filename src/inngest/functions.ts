@@ -159,8 +159,7 @@ export const codeAgentFunction = inngest.createFunction(
 
     const isError = 
     !result.state.data.summary ||   
-    Object.keys(result.state.data.files).length === 0;
-
+    Object.keys(result.state.data.files || {}).length
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
       const host = sandbox.getHost(3000);
