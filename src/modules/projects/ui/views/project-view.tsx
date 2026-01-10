@@ -12,24 +12,26 @@ import { Suspense } from "react";
 interface Props {
     projectId: string;
 }
-    return(
+export const ProjectView = ({ projectId }: Props) => {
+    return (
         <div className="h-screen">
+            {/* @ts-ignore */}
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel
-                defaultSize={35}
-                minSize={20}
-                className="flex flex-col min-h-0">
+                    defaultSize={35}
+                    minSize={20}
+                    className="flex flex-col min-h-0">
                     <Suspense fallback={<p>Loading messages...</p>}>
                         <MessagesContainer projectId={projectId} />
                     </Suspense>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel
-                defaultSize={65}
-                minSize={50} >
+                    defaultSize={65}
+                    minSize={50} >
                     TODO: Preview
                 </ResizablePanel>
             </ResizablePanelGroup>
         </div>
     )
-};
+}
