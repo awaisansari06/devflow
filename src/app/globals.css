@@ -144,4 +144,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Hide Next.js Development Indicators */
+  body > [data-nextjs-toast],
+  body > [data-nextjs-toast-wrapper],
+  [data-nextjs-dev-tools-button],
+  .nextjs-toast-errors-parent {
+      display: none !important;
+  }
 }
