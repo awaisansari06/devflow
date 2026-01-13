@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Sandbox } from "@e2b/code-interpreter";
-import { createAgent, openai, createTool, createNetwork, Tool } from '@inngest/agent-kit';
+import { createAgent, gemini, createTool, createNetwork, Tool } from '@inngest/agent-kit';
 import { PROMPT } from "../prompt";
 import { prisma } from "@/lib/db";
 import { inngest } from "./client";
@@ -23,10 +23,8 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       system: PROMPT,
       description: "An expert coding agent",
-      model: openai({
-        model: "llama-3.3-70b-versatile",
-        baseUrl: "https://api.groq.com/openai/v1",
-        apiKey: process.env.GROQ_API_KEY,
+      model: gemini({
+        model: "gemini-2.5-flash",
       }),
       tools: [
         createTool({
