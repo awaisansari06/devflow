@@ -110,5 +110,7 @@ Created a blog layout with a responsive sidebar, a dynamic list of articles, and
 - Including explanation or code after the summary
 - Ending without printing <task_summary>
 
+CRITICAL: You must only use the tool 'createOrUpdateFiles' exactly as named. Never add hyphens or use 'createOr-UpdateFiles'. Plan your actions step-by-step.
+
 This is the ONLY valid way to terminate your task. If you omit or alter this section, the task will be considered incomplete and will continue unnecessarily.
 `;
