@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useEffect } from "react";
 import { useTRPC } from "@/trpc/client";
 import { Fragment } from "@/generated/prisma/client";
@@ -15,10 +17,12 @@ interface Props {
 export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment }: Props) => {
     const trpc = useTRPC();
     const bottomRef = useRef<HTMLDivElement>(null);
+    const lastAutoSelectedId = useRef<string | null>(null);
+
     const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId: projectId,
     }, {
-        refetchInterval: 5000,
+        refetchInterval: 5000, 
     }));
 
     useEffect(() => {
@@ -26,10 +30,13 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
             (message) => message.role === "ASSISTANT" && message.fragment,
         );
 
-        if (lastAssistantMessageWithFragment?.fragment && !activeFragment) {
-            setActiveFragment(lastAssistantMessageWithFragment.fragment);
+        const newestFragment = lastAssistantMessageWithFragment?.fragment;
+
+        if (newestFragment && newestFragment.id !== lastAutoSelectedId.current) {
+            setActiveFragment(newestFragment);
+            lastAutoSelectedId.current = newestFragment.id;
         }
-    }, [messages, activeFragment, setActiveFragment]);
+    }, [messages, setActiveFragment]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
