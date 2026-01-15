@@ -8,7 +8,7 @@ import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 
 interface AgentState {
   summary: string;
-  files: { [path: string]: string};
+  files: { [path: string]: string };
 }
 
 export const codeAgentFunction = inngest.createFunction(
@@ -69,32 +69,27 @@ export const codeAgentFunction = inngest.createFunction(
               }),
             )
           }),
-          handler: async ({ files }, { step, network }: Tool.Options<AgentState>) => {
-            return await step?.run("createOrUpdateFiles", async () => {
-              try {
+          handler: async (
+            { files },
+            { step, network }: Tool.Options<AgentState>
+          ) => {
+            const newFiles = await step?.run("createOrUpdateFiles", async () => {
+            try {
                 const updatedFiles = network.state.data.files || {};
                 const sandbox = await getSandbox(sandboxId);
-                
-                for (const file of files) {
-                  const cleanPath = file.path.replace(/^\/home\/user\//, "").replace(/^\//, "");
-                  
-                  let cleanContent = file.content;
-                  const useClientRegex = /^[\s\n]*['"]?use\s+client['"]?;?[\s\n]*/i;
-                  if (useClientRegex.test(cleanContent)) {
-                    cleanContent = cleanContent.replace(useClientRegex, "");
-                    cleanContent = '"use client";\n\n' + cleanContent;
-                  }
-
-                  await sandbox.files.write(cleanPath, cleanContent);
-                  updatedFiles[cleanPath] = cleanContent;
+                for(const file of files){
+                  await sandbox.files.write(file.path, file.content);
+                  updatedFiles[file.path] = file.content;
                 }
-                
-                network.state.data.files = updatedFiles;
-                return "Files updated successfully.";
+                return updatedFiles;
               } catch (e) {
-                return "Error updating files: " + e;
+                return "Error: " + e;
               }
             });
+
+            if(typeof newFiles === "object") {
+              network.state.data.files = newFiles;
+            }
           }
         }),
         createTool({
@@ -112,7 +107,7 @@ export const codeAgentFunction = inngest.createFunction(
                   const content = await sandbox.files.read(file);
                   contents.push({
                     path: file,
-                    content,
+                    content
                   });
                 }
                 return JSON.stringify(contents);
@@ -155,9 +150,10 @@ export const codeAgentFunction = inngest.createFunction(
 
     const result = await network.run(event.data.value);
 
-    const isError = 
-    !result.state.data.summary ||   
-    Object.keys(result.state.data.files || {}).length
+    const isError =
+      !result.state.data.summary ||
+      Object.keys(result.state.data.files || {}).length === 0;
+
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
       const host = sandbox.getHost(3000);
@@ -165,7 +161,7 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     await step.run("save-result", async () => {
-      if ( isError) {
+      if (isError) {
         return await prisma.message.create({
           data: {
             projectId: event.data.projectId,
@@ -178,14 +174,14 @@ export const codeAgentFunction = inngest.createFunction(
       return await prisma.message.create({
         data: {
           projectId: event.data.projectId,
-          content: result.state.data.summary || "Task completed with no summary.",
+          content: result.state.data.summary,
           role: "ASSISTANT",
           type: "RESULT",
           fragment: {
             create: {
               sandboxUrl: sandboxUrl,
               title: "Fragment",
-              files: result.state.data.files || {}, 
+              files: result.state.data.files || {},
             },
           },
         },

@@ -1,7 +1,6 @@
 import { useRef, useEffect } from "react";
-import { MessageScalarFieldEnum } from "@/generated/prisma/internal/prismaNamespace";
 import { useTRPC } from "@/trpc/client";
-import { Fragment } from "@/generated/prisma/models";
+import { Fragment } from "@/generated/prisma/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
@@ -19,23 +18,21 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
     const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId: projectId,
     }, {
-        // TODO: Temporary live message update
         refetchInterval: 5000,
     }));
-    
-    // TODO: This is causing problems
-    // useEffect(() => {
-    //     const lastAssistantMessageWithFragment = messages.findLast(
-    //         (message) => message.role === "ASSISTANT" && message.fragment,
-    //     );
-
-    //     if (lastAssistantMessageWithFragment) {
-    //         setActiveFragment(lastAssistantMessageWithFragment.fragment);
-    //     }
-    // }, [messages, setActiveFragment]);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView();
+        const lastAssistantMessageWithFragment = messages.findLast(
+            (message) => message.role === "ASSISTANT" && message.fragment,
+        );
+
+        if (lastAssistantMessageWithFragment?.fragment && !activeFragment) {
+            setActiveFragment(lastAssistantMessageWithFragment.fragment);
+        }
+    }, [messages, activeFragment, setActiveFragment]);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages.length]);
 
     const lastMessage = messages[messages.length - 1];

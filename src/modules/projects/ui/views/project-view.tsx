@@ -1,7 +1,12 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Fragment } from "@/generated/prisma/models";
+import { EyeIcon, CodeIcon, CrownIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Fragment } from "@/generated/prisma/client";
+import { FileExplorer } from "@/components/file-explorer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -17,10 +22,10 @@ interface Props {
 export const ProjectView = ({ projectId }: Props) => {
 
     const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
+    const [tabState, setTabState] = useState<"preview" | "code">("preview");
 
     return (
         <div className="h-screen">
-            {/* @ts-ignore */}
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel
                     defaultSize={35}
@@ -30,23 +35,54 @@ export const ProjectView = ({ projectId }: Props) => {
                         <ProjectHeader projectId={projectId} />
                     </Suspense>
                     <Suspense fallback={<p>Loading messages...</p>}>
-                        <MessagesContainer 
-                        projectId={projectId}
-                        activeFragment={activeFragment}
-                        setActiveFragment={setActiveFragment} 
-                    />
+                        <MessagesContainer
+                            projectId={projectId}
+                            activeFragment={activeFragment}
+                            setActiveFragment={setActiveFragment}
+                        />
                     </Suspense>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
                 <ResizablePanel
                     defaultSize={65}
-                    minSize={50} 
+                    minSize={50}
                 >
-                    {!!activeFragment && <FragmentWeb data=
-                    {activeFragment} /> }
-
+                    <Tabs
+                        className="h-full flex flex-col gap-y-0"
+                        defaultValue="preview"
+                        value={tabState}
+                        onValueChange={(value) => setTabState(value as "preview" | "code")}
+                    >
+                        <div className="w-full flex items-center p-2 border-b bg-sidebar shrink-0">
+                            <TabsList className="h-8 p-0 border rounded-md">
+                                <TabsTrigger value="preview" className="rounded-md">
+                                    <EyeIcon /> <span>Demo</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="code" className="rounded-md">
+                                    <CodeIcon /> <span>Code</span>
+                                </TabsTrigger>
+                            </TabsList>
+                            <div className="ml-auto flex items-center gap-x-2">
+                                <Button asChild size="sm" variant="default">
+                                    <Link href="/pricing">
+                                        <CrownIcon /> Upgrade
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                        <TabsContent value="preview" className="flex-1 w-full min-h-0 data-[state=inactive]:hidden">
+                            {!!activeFragment && <FragmentWeb data={activeFragment} />}
+                        </TabsContent>
+                        <TabsContent value="code" className="flex-1 w-full min-h-0 data-[state=inactive]:hidden">
+                            {!!activeFragment?.files && (
+                                <FileExplorer
+                                    files={activeFragment.files as { [path: string]: string }}
+                                />
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </div>
-    )
-}
+    );
+};
