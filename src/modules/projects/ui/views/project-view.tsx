@@ -17,6 +17,7 @@ import { FragmentWeb } from "../components/fragment-web";
 import { ProjectHeader } from "@/modules/projects/ui/components/project-header";
 import { MessagesContainer } from "@/modules/projects/ui/components/messages-container";
 import { useAuth } from "@clerk/nextjs";
+import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 
 interface Props {
     projectId: string;
@@ -54,16 +55,20 @@ export const ProjectView = ({ projectId }: Props) => {
                     minSize={20}
                     className="flex flex-col min-h-0"
                 >
-                    <Suspense fallback={<p className="p-4">Loading project...</p>}>
-                        <ProjectHeader projectId={projectId} />
+                    <ErrorBoundary fallback={<p>project header error</p>}>
+                        <Suspense fallback={<p className="p-4">Loading project...</p>}>
+                            <ProjectHeader projectId={projectId} />
+                        </Suspense>
+                    </ErrorBoundary>
+                    <ErrorBoundary fallback={<p>messages container error</p>}>
+                        <Suspense fallback={<p className="p-4">Loading messages...</p>}>
+                            <MessagesContainer
+                                projectId={projectId}
+                                activeFragment={activeFragment}
+                                setActiveFragment={setActiveFragment}
+                            />
                     </Suspense>
-                    <Suspense fallback={<p className="p-4">Loading messages...</p>}>
-                        <MessagesContainer
-                            projectId={projectId}
-                            activeFragment={activeFragment}
-                            setActiveFragment={setActiveFragment}
-                        />
-                    </Suspense>
+                    </ErrorBoundary>
                 </ResizablePanel>
 
                 <ResizableHandle className="hover:bg-primary transition-colors" />

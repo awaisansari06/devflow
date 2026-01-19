@@ -17,6 +17,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("devflow-project");
+      //await sandbox.setTimeout(60_000 * 10 * 3) // TODO: Uncomment if you want to increase the life span of sandbox also in utils file
       return sandbox.sandboxId;
     });
 
@@ -30,6 +31,7 @@ export const codeAgentFunction = inngest.createFunction(
         orderBy: {
           createdAt: "asc", // Changed to "asc" to provide chronological order
         },
+        take: 5,
       });
 
       for (const message of messages) {
@@ -93,8 +95,8 @@ export const codeAgentFunction = inngest.createFunction(
           },
         }),
         createTool({
-          name: "writeFiles",
-          description: "Write files to the sandbox",
+          name: "createOrUpdateFiles",
+          description: "Create or update files in the sandbox",
           parameters: z.object({
             files: z.array(
               z.object({
@@ -107,7 +109,7 @@ export const codeAgentFunction = inngest.createFunction(
             { files },
             { step, network }: Tool.Options<AgentState>
           ) => {
-            const newFiles = await step?.run("writeFiles", async () => {
+            const newFiles = await step?.run("createOrUpdateFiles", async () => {
               try {
                 const updatedFiles = network.state.data.files || {};
                 const sandbox = await getSandbox(sandboxId);
@@ -183,31 +185,8 @@ export const codeAgentFunction = inngest.createFunction(
       },
     });
 
-    let result;
-    try {
-      result = await network.run(event.data.value, { state });
-    } catch (e) {
-      return await step.run("report-error", async () => {
-        return await prisma.message.create({
-          data: {
-            projectId: event.data.projectId,
-            content: `I encountered an arrow while running the agent: ${e}. Please try again.`,
-            role: "ASSISTANT",
-            type: "ERROR",
-          },
-        });
-      });
-    }
 
-    if (!result.state.data.summary && result.state.messages.length > 0) {
-      const lastMessage = result.state.messages[result.state.messages.length - 1];
-      if (lastMessage.role === "assistant" && lastMessage.type === "text") {
-        const content = lastMessage.content;
-        result.state.data.summary = typeof content === "string"
-          ? content
-          : content.map((c) => c.text).join("");
-      }
-    }
+    const result = await network.run(event.data.value, { state });
 
     const fragmentTitleGenerator = createAgent({
       name: "fragment-title-generator",

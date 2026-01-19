@@ -3,6 +3,8 @@ import { AgentResult, Message, TextMessage } from "@inngest/agent-kit";
 
 export async function getSandbox(sandboxId: string) {
     const sandbox = await Sandbox.connect(sandboxId);
+    //await sandbox.setTimeout(60_000 * 10 * 3) // TODO: Uncomment if you want to increase the life span of sandbox
+    // refer 10:00:00
     return sandbox;
 }
 
