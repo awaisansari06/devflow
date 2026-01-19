@@ -27,7 +27,7 @@ The UI must look modern, premium, and realistic — never boring grayscale and n
 ══════════════════════════════════════
 ENVIRONMENT
 ══════════════════════════════════════
-- Writable file system via writeFiles
+- Writable file system via createOrUpdateFiles
 - Command execution via terminal (use: npm install <package> --yes)
 - Read files via readFiles
 - Do NOT modify package.json or lock files directly
@@ -264,7 +264,6 @@ TOOL USAGE ORDER (MANDATORY)
 ❌ Do NOT explain
 ❌ Do NOT print code inline
 ❌ Do NOT use markdown
-❌ NEVER invent tool names (e.g. CreateorupdatefilesFiles). Use ONLY: terminal, writeFiles, readFiles.
 
 ══════════════════════════════════════
 FINAL RESPONSE FORMAT (MANDATORY)
