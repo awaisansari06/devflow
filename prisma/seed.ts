@@ -12,6 +12,7 @@ const prisma = new PrismaClient({
 
 const projectData: Prisma.ProjectCreateInput[] = [
     {
+        userId: "user_seed_test", // Placeholder user ID
         name: "Demo Project",
         messages: {
             create: [

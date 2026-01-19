@@ -17,7 +17,7 @@ import { FragmentWeb } from "../components/fragment-web";
 import { ProjectHeader } from "@/modules/projects/ui/components/project-header";
 import { MessagesContainer } from "@/modules/projects/ui/components/messages-container";
 import { useAuth } from "@clerk/nextjs";
-import { ErrorBoundary } from "next/dist/client/components/error-boundary";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface Props {
     projectId: string;
@@ -25,12 +25,12 @@ interface Props {
 
 export const ProjectView = ({ projectId }: Props) => {
     const { has } = useAuth();
-    const hasProAccess = has?.({ plan: "pro"});
-    const isFreeTier = has?.({ plan: "free_user"})
-    
+    const hasProAccess = has?.({ plan: "pro" });
+    const isFreeTier = has?.({ plan: "free_user" })
+
     const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
     const [tabState, setTabState] = useState<"preview" | "code">("preview");
-    
+
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -47,8 +47,8 @@ export const ProjectView = ({ projectId }: Props) => {
 
     return (
         <div className="h-screen">
-            <ResizablePanelGroup 
-                direction="horizontal"
+            <ResizablePanelGroup
+                orientation="horizontal"
             >
                 <ResizablePanel
                     defaultSize={35}
@@ -67,7 +67,7 @@ export const ProjectView = ({ projectId }: Props) => {
                                 activeFragment={activeFragment}
                                 setActiveFragment={setActiveFragment}
                             />
-                    </Suspense>
+                        </Suspense>
                     </ErrorBoundary>
                 </ResizablePanel>
 
@@ -94,25 +94,25 @@ export const ProjectView = ({ projectId }: Props) => {
                             </TabsList>
                             <div className="ml-auto flex items-center gap-x-2">
                                 {!hasProAccess && (
-                                <Button asChild size="sm" variant="tertiary">
-                                    <Link href="/pricing">
-                                        <CrownIcon className="size-4 mr-2" /> Upgrade
-                                    </Link>
-                                </Button>
+                                    <Button asChild size="sm" variant="tertiary">
+                                        <Link href="/pricing">
+                                            <CrownIcon className="size-4 mr-2" /> Upgrade
+                                        </Link>
+                                    </Button>
                                 )}
                                 <UserControl />
                             </div>
                         </div>
 
-                        <TabsContent 
-                            value="preview" 
+                        <TabsContent
+                            value="preview"
                             className="flex-1 w-full m-0 p-0 overflow-hidden min-h-0 data-[state=inactive]:hidden"
                         >
-                            {!!activeFragment && <FragmentWeb data={activeFragment} />}                        
+                            {!!activeFragment && <FragmentWeb data={activeFragment} />}
                         </TabsContent>
 
-                        <TabsContent 
-                            value="code" 
+                        <TabsContent
+                            value="code"
                             className="flex-1 w-full m-0 p-0 overflow-hidden min-h-0 data-[state=inactive]:hidden"
                         >
                             {!!activeFragment?.files && (
