@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Code2Icon, ChevronRightIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { MessageRole, Fragment, MessageType } from "@/generated/prisma/client";
+import { MessageRole, Fragment, MessageType } from "@prisma/client";
 
 interface UserMessageProps {
     content: string;
@@ -35,7 +35,7 @@ const FragmentCard = ({
             className={cn(
                 "flex items-start text-start gap-2 border rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors",
                 isActiveFragment &&
-                    "bg-primary text-primary-foreground border-primary hover:bg-primary",
+                "bg-primary text-primary-foreground border-primary hover:bg-primary",
             )}
             onClick={() => onFragmentClick(fragment)}
         >
@@ -98,7 +98,7 @@ const AssistantMessage = ({
                     />
                 )}
             </div>
-           
+
         </div>
     );
 }

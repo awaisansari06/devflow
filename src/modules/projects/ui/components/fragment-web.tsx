@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
 
-import { Fragment } from "@/generated/prisma/client";
+import { Fragment } from "@prisma/client";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 
@@ -64,7 +64,7 @@ export const FragmentWeb = ({ data }: Props) => {
                     </Button>
                 </Hint>
             </div>
-            
+
             {/* The wrapper div is set to 'relative' with 'flex-1' and 'min-h-0'.
                 This is the standard 'Flexbox Fix' for iframes in modern React apps.
             */}

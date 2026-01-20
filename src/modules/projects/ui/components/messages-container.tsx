@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { useTRPC } from "@/trpc/client";
-import { Fragment } from "@/generated/prisma/client";
+import { Fragment } from "@prisma/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
@@ -22,7 +22,7 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
     const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId: projectId,
     }, {
-        refetchInterval: 5000, 
+        refetchInterval: 5000,
     }));
 
     useEffect(() => {
