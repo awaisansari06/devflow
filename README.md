@@ -1,8 +1,6 @@
 
 <div align="center">
 
-  <img src="https://devflow-project.vercel.app/opengraph-image.png" alt="DevFlow" width="100%" />
-
   # DevFlow
   
   **The Next-Generation AI Coding Workspace**
