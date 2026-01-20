@@ -71,6 +71,7 @@
     "react-resizable-panels": "^4.3.3",
     "react-textarea-autosize": "^8.5.9",
     "recharts": "^2.15.4",
+    "serialize-error-cjs": "^0.2.0",
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
     "superjson": "^2.2.6",
