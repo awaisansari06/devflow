@@ -96,5 +96,108 @@ export const projectsRouter = createTRPCRouter({
 
       return createdProject;
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1, { message: "ID is required" }),
+        name: z.string().min(1, { message: "Name is required" }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existingProject = await prisma.project.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.auth.userId as string,
+        },
+      });
+
+      if (!existingProject) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+        },
+      });
+
+      return updatedProject;
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1, { message: "ID is required" }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existingProject = await prisma.project.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.auth.userId as string,
+        },
+      });
+
+      if (!existingProject) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      await prisma.project.delete({
+        where: {
+          id: input.id,
+        },
+      });
+
+      return { success: true };
+    }),
+  toggleFavorite: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1, { message: "ID is required" }),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      console.log("TOGGLE FAVORITE CALLED");
+      console.log("Input ID:", input.id);
+      console.log("User ID:", ctx.auth.userId);
+
+      const existingProject = await prisma.project.findFirst({
+        where: {
+          id: input.id,
+          userId: ctx.auth.userId as string,
+        },
+      });
+
+      console.log("Existing Project Found:", !!existingProject);
+
+      if (!existingProject) {
+        console.log("ERROR: Project not found for user");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          isFavorite: !existingProject.isFavorite,
+        },
+      });
+
+      console.log("Updated Project Favorite Status:", updatedProject.isFavorite);
+
+      return updatedProject;
+    }),
 });
 

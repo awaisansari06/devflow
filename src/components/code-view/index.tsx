@@ -1,5 +1,5 @@
 import Prism from "prismjs";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
@@ -16,14 +16,18 @@ export const CodeView = ({
     code,
     lang
 }: Props) => {
+    const codeRef = useRef<HTMLElement>(null);
+
     useEffect(() => {
-        Prism.highlightAll();
-    }, [code]);
+        if (codeRef.current) {
+            Prism.highlightElement(codeRef.current);
+        }
+    }, [code, lang]);
 
     return (
         <div className="flex-1 overflow-auto p-2 custom-scrollbar">
             <pre className="min-w-fit">
-                <code className={`language-${lang}`}>{code}</code>
+                <code ref={codeRef} className={`language-${lang}`}>{code}</code>
             </pre>
         </div>
     );

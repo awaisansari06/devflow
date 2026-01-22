@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Code2Icon, ChevronRightIcon } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { Card } from "@/components/ui/card";
 import { MessageRole, Fragment, MessageType } from "@prisma/client";
 
@@ -70,19 +73,14 @@ const AssistantMessage = ({
     onFragmentClick,
     type
 }: AssistantMessageProps) => {
+
     return (
         <div className={cn(
             "flex flex-col group px-2 pb-4",
             type === "ERROR" && "text-red-700 dark:text-red-500",
         )}>
             <div className="flex items-center gap-2 pl-2 mb-2">
-                <Image
-                    src="/logo.svg"
-                    alt="DevFlow"
-                    width={18}
-                    height={18}
-                    className="shrink-0"
-                />
+                <Logo width={18} height={18} imageClassName="shrink-0" />
                 <span className="text-sm font-medium">DevFlow</span>
                 <span className="text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
                     {format(createdAt, "HH:mm 'on' MMMM dd, yyyy")}

@@ -1,16 +1,16 @@
 <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Badge Removed for Transparency -->
-  
+
   <!-- Terminal window -->
-  <rect x="12" y="14" width="20" height="16" rx="5" fill="#0B0B0C" stroke="#3A3A3F" stroke-width="2"/>
+  <rect x="12" y="14" width="20" height="16" rx="5" fill="#F7F4EE" stroke="#E6D9C6" stroke-width="2"/>
 
   <!-- Prompt arrow -->
-  <path d="M16 20L19 22L16 24" stroke="#F3E7C8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <path d="M16 20L19 22L16 24" stroke="#111112" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
 
   <!-- Prompt line -->
   <path d="M21 24H27" stroke="#dc2626" stroke-width="2.6" stroke-linecap="round"/>
 
   <!-- Spark -->
   <circle cx="30" cy="14" r="2.4" fill="#dc2626"/>
-  <circle cx="30" cy="14" r="6" fill="#dc2626" fill-opacity="0.14"/>
+  <circle cx="30" cy="14" r="6" fill="#dc2626" fill-opacity="0.12"/>
 </svg>

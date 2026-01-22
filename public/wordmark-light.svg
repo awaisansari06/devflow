@@ -1,0 +1,36 @@
+<svg width="170" height="44" viewBox="0 0 170 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon (Terminal Spark - light badge) -->
+  <rect x="2" y="2" width="40" height="40" rx="12" fill="#FFFFFF"/>
+
+  <rect x="12" y="14" width="20" height="16" rx="5" fill="#F7F4EE" stroke="#E6D9C6" stroke-width="2"/>
+
+  <path
+    d="M16 20L19 22L16 24"
+    stroke="#1B1B1C"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M21 24H27"
+    stroke="#C96342"
+    stroke-width="2.6"
+    stroke-linecap="round"
+  />
+
+  <circle cx="30" cy="14" r="2.4" fill="#C96342"/>
+  <circle cx="30" cy="14" r="6" fill="#C96342" fill-opacity="0.12"/>
+
+  <!-- Wordmark -->
+  <text
+    x="54"
+    y="28"
+    font-family="Poppins, Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+    font-size="18"
+    font-weight="600"
+    letter-spacing="0.2px"
+    fill="#111112"
+  >
+    Dev<tspan fill="#C96342">Flow</tspan>
+  </text>
+</svg>

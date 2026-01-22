@@ -12,11 +12,19 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
-import { Form, FormField } from "@/components/ui/form";
-import { PROJECT_TEMPLATES } from "../../constants";
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { useClerk } from "@clerk/nextjs";
+import { useTypewriter } from "@/hooks/use-typewriter";
+import { TemplatePicker } from "./template-picker";
 
-
+const PLACEHOLDERS = [
+    "Ask DevFlow to build a landing page for my...",
+    "Ask DevFlow to build a dashboard to...",
+    "Ask DevFlow to build an e-commerce site to...",
+    "Ask DevFlow to build a portfolio to...",
+    "Ask DevFlow to build a blog platform to...",
+    "Ask DevFlow to build a web app to...",
+];
 
 const formSchema = z.object({
     value: z.string()
@@ -35,7 +43,7 @@ export const ProjectForm = () => {
             value: "",
         },
     });
-    
+
     const createProject = useMutation(trpc.projects.create.mutationOptions({
         onSuccess: (data) => {
             queryClient.invalidateQueries(
@@ -49,7 +57,7 @@ export const ProjectForm = () => {
         onError: (error) => {
             toast.error(error.message);
 
-            if(error.data?.code === "UNAUTHORIZED") {
+            if (error.data?.code === "UNAUTHORIZED") {
                 clerk.openSignIn();
             }
             if (error.data?.code === "TOO_MANY_REQUESTS") {
@@ -57,7 +65,7 @@ export const ProjectForm = () => {
             }
         },
     }))
-    
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         createProject.mutateAsync({
             value: values.value,
@@ -71,10 +79,12 @@ export const ProjectForm = () => {
             shouldTouch: true,
         });
     };
-    
+
     const [isFocused, setIsFocused] = useState(false);
     const isPending = createProject.isPending;
     const isButtonDisabled = isPending || !form.formState.isValid;
+
+    const placeholder = useTypewriter(PLACEHOLDERS);
 
     return (
         <Form {...form}>
@@ -82,46 +92,52 @@ export const ProjectForm = () => {
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
                     className={cn(
-                        "relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
-                        isFocused && "shadow-xs",
+                        "relative border border-border/70 bg-card/60 backdrop-blur-md shadow-sm p-4 pt-1 rounded-xl transition-all",
+                        isFocused && "shadow-xs ring-1 ring-primary/5",
                     )}
                 >
-                <FormField
-                    control={form.control}
-                    name="value"
-                    render={({ field }) => (
-                        <TextareaAutosize
-                            {...field}
-                            disabled={isPending}
-                            onFocus={() => setIsFocused(true)}
-                            onBlur={() => setIsFocused(false)}
-                            minRows={2}
-                            maxRows={8}
-                            className="pt-4 resize-none border-none w-full outline-none bg-transparent"
-                            placeholder="What would you like to build?"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                                    e.preventDefault();
-                                    form.handleSubmit(onSubmit)();
-                                }
-                            }}
-                        />
-                    )}
-                />
-                <div className="flex gap-x-2 items-end justify-between pt-2">
-                    <div className="text-[10px] text-muted-foreground font-mono">
-                        <kbd className="ml-auto pointer-events-none inline-flex h-5 select-non3 items-center pag-1
-                        rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                            <span>&#8984;</span>Enter
-                        </kbd>
-                        &nbsp;to submit
-                    </div>
-                    <Button
-                        disabled={isButtonDisabled}
-                        className={cn(
-                            "size-8 rounded-full",
-                            isButtonDisabled && "bg-muted-foreground border",
+                    <FormField
+                        control={form.control}
+                        name="value"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <TextareaAutosize
+                                        {...field}
+                                        suppressHydrationWarning
+                                        disabled={isPending}
+                                        onFocus={() => setIsFocused(true)}
+                                        onBlur={() => setIsFocused(false)}
+                                        minRows={2}
+                                        maxRows={8}
+                                        className="pt-4 resize-none border-none w-full outline-none bg-transparent"
+                                        placeholder={placeholder}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault();
+                                                form.handleSubmit(onSubmit)();
+                                            }
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
+                    />
+                    <div className="flex gap-x-2 items-end justify-between pt-2">
+                        <div className="text-[10px] text-muted-foreground font-mono">
+                            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1
+                        rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                                Enter
+                            </kbd>
+                            &nbsp;to submit
+                        </div>
+                        <Button
+                            disabled={isButtonDisabled}
+                            className={cn(
+                                "size-8 rounded-full",
+                                isButtonDisabled && "bg-muted-foreground border",
+                            )}
                         >
                             {isPending ? (
                                 <Loader2Icon className="size-4 animate-spin" />
@@ -129,23 +145,11 @@ export const ProjectForm = () => {
 
                                 <ArrowUpIcon />
                             )}
-                    </Button>
-                </div>
-            </form>
-            <div className="flex-wrap justify-center gap-2 hidden md:flex max-w-3xl">
-                {PROJECT_TEMPLATES.map((template) => (
-                    <Button
-                        key={template.title}
-                        variant="outline"
-                        size="sm"
-                        className="bg-white dark:bg-sidebar"
-                        onClick={() => onSelect(template.prompt)}
-                    >
-                        {template.emoji} {template.title}
-                    </Button>
-                ))}
-            </div>
-        </section>
+                        </Button>
+                    </div>
+                </form>
+                <TemplatePicker onPick={onSelect} />
+            </section>
         </Form>
     );
 };
