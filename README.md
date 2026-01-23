@@ -6,7 +6,7 @@
 
   # DevFlow
   
-  **The Intelligent AI-Powered Coding Workspace**
+  **Build something with DevFlow**
   
   [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://devflow-project.vercel.app/)
   [![Built with Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -27,7 +27,7 @@
 
 ## 📖 Introduction
 
-**DevFlow** is not just another code editor; it is a **comprehensive, agentic coding environment** designed to bridge the gap between AI code generation and real-world execution. 
+**DevFlow** is a comprehensive, agentic coding environment designed to bridge the gap between AI code generation and real-world execution. **Create apps and websites by chatting with AI.**
 
 Traditional AI coding assistants gives you a snippet of code and leave you to figure out how to run it. **DevFlow changes the paradigm.** It acts as a full-fledged pair programmer that manages its own secure cloud computer (Sandbox), installs dependencies, runs commands, helps you debug errors, and renders instant UI previews.
 
@@ -35,11 +35,16 @@ Powered by **Google's Gemini-3-pro** model and orchestrated by **Inngest**, DevF
 
 ## ✨ Features
 
-### 🤖 Autonomous AI Agent
-At the heart of DevFlow is a sophisticated AI agent. It doesn't just "complete text"; it reasoning about your intent.
+### ⚡ AI Projects
+Build full-stack apps with just a prompt.
 - **Planner**: Breaks down complex user requests into executable steps.
 - **Executor**: Writes code to files, runs terminal commands, and manages file systems.
-- **Debugger**: Reads error outputs from the terminal and auto-corrects its own code.
+
+### 🧠 Smart Templates
+Start from best-practice architectures.
+- **Scaffolding**: Automatically sets up project structures.
+- **Best Practices**: Integrated linting and formatting.
+
 
 ### 🔐 Secure Cloud Sandboxing
 Safety is paramount. We don't run code on your browser or your local machine.
