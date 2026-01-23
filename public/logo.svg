@@ -1,46 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 44" aria-label="DevFlow">
-  <style>
-    :root {
-      --foreground: #09090b;
-      --background: #ffffff;
-      --primary: #e11d48;
-      --card: #ffffff;
-      --border: #e4e4e7;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --foreground: #fafafa;
-        --background: #09090b;
-        --primary: #f43f5e;
-        --card: #18181b;
-        --border: #27272a;
-      }
-    }
-  </style>
-  <defs>
-    <linearGradient id="flowGradient" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="var(--foreground)" />
-      <stop offset="55%" stop-color="var(--primary)" />
-      <stop offset="100%" stop-color="var(--primary)" />
-    </linearGradient>
-  </defs>
+<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Badge Removed for Transparency -->
+  
+  <!-- Terminal window -->
+  <rect x="12" y="14" width="20" height="16" rx="5" fill="#0B0B0C" stroke="#3A3A3F" stroke-width="2"/>
 
-  <!-- Icon Badge -->
-  <rect x="2" y="2" width="40" height="40" rx="12" fill="var(--card)" />
+  <!-- Prompt arrow -->
+  <path d="M16 20L19 22L16 24" stroke="#F3E7C8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
 
-  <!-- Terminal Window -->
-  <rect x="12" y="14" width="20" height="16" rx="5" fill="var(--background)" stroke="var(--border)" stroke-width="2" />
-
-  <!-- Prompt -->
-  <path d="M16 20L19 22L16 24" stroke="var(--foreground)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
-  <path d="M21 24H27" stroke="var(--primary)" stroke-width="2.6" stroke-linecap="round" />
+  <!-- Prompt line -->
+  <path d="M21 24H27" stroke="#dc2626" stroke-width="2.6" stroke-linecap="round"/>
 
   <!-- Spark -->
-  <circle cx="30" cy="14" r="2.4" fill="var(--primary)" />
-  <circle cx="30" cy="14" r="6" fill="var(--primary)" fill-opacity="0.14" />
-
-  <!-- Wordmark Text -->
-  <text x="56" y="29" font-family="Poppins, Inter, system-ui, -apple-system, sans-serif" font-size="19" font-weight="700" font-style="italic" letter-spacing="-0.4" fill="var(--foreground)">
-    Dev<tspan fill="url(#flowGradient)">Flow</tspan>
-  </text>
+  <circle cx="30" cy="14" r="2.4" fill="#dc2626"/>
+  <circle cx="30" cy="14" r="6" fill="#dc2626" fill-opacity="0.14"/>
 </svg>
