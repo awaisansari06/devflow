@@ -11,7 +11,7 @@ interface SwipeGestureOptions {
 
 export function useSwipeGesture<T extends HTMLElement>(
     options: SwipeGestureOptions
-): RefObject<T> {
+): RefObject<T | null> {
     const {
         onSwipeLeft,
         onSwipeRight,
