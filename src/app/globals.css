@@ -274,3 +274,30 @@
     cursor: pointer;
   }
 }
+
+/* -------------------------------------------------------
+   Smooth Theme Transitions
+------------------------------------------------------- */
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Exclude elements that should not transition */
+.no-theme-transition,
+.no-theme-transition *,
+[data-no-transition],
+[data-no-transition] * {
+  transition: none !important;
+}
+
+/* Specific exclusions for better performance */
+canvas,
+video,
+iframe,
+img {
+  transition: none !important;
+}

@@ -1,7 +1,5 @@
-import { CopyCheckIcon, CopyIcon } from "lucide-react";
 import { useState, useMemo, useCallback, Fragment } from "react";
 
-import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import {
     ResizableHandle,
@@ -27,7 +25,9 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
+import { useKeyboardShortcut } from "@/hooks/use-keyboard-shortcut";
+import { useEffect } from "react";
 
 import { FragmentFiles } from "@/schemas/fragment-files";
 
@@ -109,14 +109,34 @@ const FileBreadcrumb = ({ filePath }: FileBreadcrumbProps) => {
 export const FileExplorer = ({
     files,
 }: FileExplorerProps) => {
-    const [copied, setCopied] = useState(false);
     const [selectedFile, setSelectedFile] = useState<string | null>(() => {
         const fileKeys = Object.keys(files);
         return fileKeys.length > 0 ? fileKeys[0] : null;
     });
     const [open, setOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    // Load sidebar preference from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem("file-explorer-sidebar-collapsed");
+        if (saved) setIsSidebarCollapsed(JSON.parse(saved));
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("file-explorer-sidebar-collapsed", JSON.stringify(newState));
+    };
+
+    // Keyboard shortcut for sidebar toggle
+    useKeyboardShortcut({
+        key: "b",
+        ctrl: true,
+        description: "Toggle file explorer sidebar",
+        callback: toggleSidebar,
+    });
 
     const treeData = useMemo(() => {
         return convertFilesToTreeItems(files);
@@ -130,16 +150,6 @@ export const FileExplorer = ({
             setOpen(false);
         }
     }, [files]);
-
-    const handleCopy = useCallback(() => {
-        if (selectedFile) {
-            navigator.clipboard.writeText(files[selectedFile]);
-            setCopied(true);
-            setTimeout(() => {
-                setCopied(false);
-            }, 2000);
-        }
-    }, [selectedFile, files]);
 
     const SidebarContent = (
         <div className="h-full w-full">
@@ -173,17 +183,6 @@ export const FileExplorer = ({
                     </Sheet>
                 )}
                 {selectedFile && <FileBreadcrumb filePath={selectedFile} />}
-                <Hint text="Copy to clipboard" side="bottom">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="ml-auto"
-                        onClick={handleCopy}
-                        disabled={copied}
-                    >
-                        {copied ? <CopyCheckIcon /> : <CopyIcon />}
-                    </Button>
-                </Hint>
             </div>
 
             <div className="flex-1 flex min-h-0 flex-col">

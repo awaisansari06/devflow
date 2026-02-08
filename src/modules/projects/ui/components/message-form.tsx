@@ -12,6 +12,7 @@ import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
 import { Usage } from "@/modules/projects/ui/components/usage";
+import { useKeyboardShortcut } from "@/hooks/use-keyboard-shortcut";
 
 
 
@@ -70,6 +71,18 @@ export const MessageForm = ({ projectId }: Props) => {
     const isButtonDisabled = isPending || !form.formState.isValid;
     const showUsage = !!usage;
 
+    // Add Ctrl+Enter shortcut
+    useKeyboardShortcut({
+        key: "Enter",
+        ctrl: true,
+        description: "Submit message",
+        callback: () => {
+            if (form.formState.isValid && !isPending) {
+                form.handleSubmit(onSubmit)();
+            }
+        },
+    });
+
     return (
         <Form {...form}>
             {showUsage && (
@@ -109,12 +122,17 @@ export const MessageForm = ({ projectId }: Props) => {
                     )}
                 />
                 <div className="flex gap-x-2 items-end justify-between pt-2">
-                    <div className="text-[10px] text-muted-foreground font-mono">
-                        <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center pag-1
+                    <div className="text-[10px] text-muted-foreground font-mono flex items-center gap-1">
+                        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1
                         rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                             Enter
                         </kbd>
-                        &nbsp;to submit
+                        <span>or</span>
+                        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1
+                        rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                            Ctrl+Enter
+                        </kbd>
+                        <span>to submit</span>
                     </div>
                     <Button
                         disabled={isButtonDisabled}

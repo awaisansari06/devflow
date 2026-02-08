@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
     data: Fragment;
+    onFullScreen?: () => void;
 };
 
-export const FragmentWeb = ({ data }: Props) => {
+export const FragmentWeb = ({ data, onFullScreen }: Props) => {
     const [copied, setCopied] = useState(false);
     const [fragmentKey, setFragmentKey] = useState(0);
 
@@ -49,7 +50,7 @@ export const FragmentWeb = ({ data }: Props) => {
                         </span>
                     </Button>
                 </Hint>
-                <Hint text="Open in new tab" side="bottom" align="end">
+                <Hint text={onFullScreen ? "Full Screen" : "Open in new tab"} side="bottom" align="end">
                     <Button
                         size="sm"
                         disabled={!data.sandboxUrl}
@@ -57,7 +58,11 @@ export const FragmentWeb = ({ data }: Props) => {
                         className="h-7 w-7 p-0"
                         onClick={() => {
                             if (!data.sandboxUrl) return;
-                            window.open(data.sandboxUrl, "_blank");
+                            if (onFullScreen) {
+                                onFullScreen();
+                            } else {
+                                window.open(data.sandboxUrl, "_blank");
+                            }
                         }}
                     >
                         <ExternalLinkIcon className="size-3.5" />

@@ -6,6 +6,8 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
+import { GlobalShortcuts } from "@/components/global-shortcuts";
+import { ThemeColorInitializer } from "@/components/theme-color-initializer";
 
 export const metadata: Metadata = {
   title: "DevFlow",
@@ -35,10 +37,10 @@ export default function RootLayout({
               attribute="class"
               defaultTheme="system"
               enableSystem
-              disableTransitionOnChange
             >
               {/* Base Color Layer */}
-              <div className="fixed inset-0 -z-50 bg-background" />
+              <div className="fixed inset-0 bg-background -z-50" />
+              <ThemeColorInitializer />
 
               {/* Full page dots (reduced visibility + better in light/dark) */}
               <div
@@ -57,6 +59,7 @@ export default function RootLayout({
               {/* Soft glow */}
               <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--primary),transparent_60%)] opacity-10" />
 
+              <GlobalShortcuts />
               <Toaster />
               {children}
             </ThemeProvider>

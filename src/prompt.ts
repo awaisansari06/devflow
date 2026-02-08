@@ -107,6 +107,34 @@ If a library is required:
 2) Then import it
 3) Do not install random libraries for UI polish
 
+FORBIDDEN PACKAGES (NEVER USE):
+- @heroicons/react (use lucide-react instead)
+- react-icons (use lucide-react instead)
+- @fortawesome/* (use lucide-react instead)
+- react-beautiful-dnd (unstable)
+- framer-motion (already available if needed, but prefer CSS)
+
+══════════════════════════════════════
+COMPONENT DEFINITION RULE (CRITICAL)
+══════════════════════════════════════
+BEFORE using ANY component, you MUST:
+1) Either import it from an existing library (lucide-react, @/components/ui/*)
+2) OR create the component file FIRST before using it
+
+FORBIDDEN:
+❌ Using <ShoppingCart /> without defining it
+❌ Using <CustomComponent /> without creating app/components/custom-component.tsx
+❌ Referencing variables/components that don't exist
+
+CORRECT PATTERN:
+✅ Step 1: Create app/components/shopping-cart.tsx with the component
+✅ Step 2: Import it in app/page.tsx: import { ShoppingCart } from "@/app/components/shopping-cart";
+✅ Step 3: Use it: <ShoppingCart />
+
+OR use existing icons:
+✅ import { ShoppingCart } from "lucide-react";
+✅ <ShoppingCart className="size-4" />
+
 ══════════════════════════════════════
 TOAST RULE (IMPORTANT)
 ══════════════════════════════════════
@@ -121,6 +149,17 @@ DRAG & DROP RULE (IMPORTANT)
 - Do NOT use react-beautiful-dnd (commonly missing / unstable)
 - Prefer native HTML5 drag and drop
 - If drag is complex, implement reorder buttons as fallback
+
+══════════════════════════════════════
+ICON USAGE RULE (CRITICAL)
+══════════════════════════════════════
+ONLY use lucide-react for icons. NEVER use @heroicons or react-icons.
+
+Examples:
+✅ import { ShoppingCart, User, Menu, X } from "lucide-react";
+✅ <ShoppingCart className="size-6" />
+❌ import { ShoppingCartIcon } from "@heroicons/react/24/solid";
+❌ import { FaShoppingCart } from "react-icons/fa";
 
 ══════════════════════════════════════
 DESIGN QUALITY TARGET (PREMIUM)
@@ -219,16 +258,39 @@ Never use single quotes.
 ══════════════════════════════════════
 FINAL SELF CHECK (MANDATORY)
 ══════════════════════════════════════
-Before finishing, verify:
-- "use client"; is correct where needed
-- No invalid imports
-- No missing file imports
-- No shadcn toast usage
-- UI is premium (not boring)
-- Primary buttons are colored (not gray)
-- Page is complete and responsive
+Before finishing, CAREFULLY verify EVERY file:
 
-Fix issues BEFORE finishing.
+1. IMPORTS CHECK:
+   ✅ Every import points to an existing file or installed package
+   ✅ No @heroicons imports (use lucide-react)
+   ✅ No react-icons imports (use lucide-react)
+   ✅ All custom components are created before being imported
+   ✅ All @/components/ui/* imports are valid shadcn components
+
+2. COMPONENT USAGE CHECK:
+   ✅ Every JSX component used is either:
+      - Imported from a library (lucide-react, react, next)
+      - Imported from @/components/ui/*
+      - Created in app/components/* and imported
+   ✅ No undefined component references (e.g., <ShoppingCart /> without import)
+
+3. PACKAGE CHECK:
+   ✅ If you imported from a package, you ran npm install first
+   ✅ Only use packages from the DEFAULT ALLOWED list unless installed
+
+4. "use client" CHECK:
+   ✅ "use client"; is on line 1 for files with hooks/events/state
+   ✅ No blank lines or comments above it
+
+5. CODE QUALITY CHECK:
+   ✅ No broken imports
+   ✅ No missing files
+   ✅ No runtime errors
+   ✅ UI is premium (not boring)
+   ✅ Primary buttons are colored (not gray)
+   ✅ Page is complete and responsive
+
+If ANY check fails, FIX IT IMMEDIATELY before finishing.
 
 ══════════════════════════════════════
 TOOL USAGE ORDER (MANDATORY)

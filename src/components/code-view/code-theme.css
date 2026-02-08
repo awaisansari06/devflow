@@ -175,3 +175,30 @@ pre[class*='language-'] {
 .dark .token.entity {
   cursor: help;
 }
+
+/* Line numbers styling */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.3);
+  padding-right: 0.5rem;
+}
+
+.line-numbers-rows > span:before {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+/* Better code block styling */
+code[class*='language-'],
+pre[class*='language-'] {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Selection color */
+code[class*='language-']::selection,
+pre[class*='language-']::selection,
+code[class*='language-'] *::selection,
+pre[class*='language-'] *::selection {
+  background: hsl(var(--primary) / 0.2);
+}
