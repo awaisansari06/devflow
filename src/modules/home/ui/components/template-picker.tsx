@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils";
 type Props = {
   onPick?: (prompt: string) => void;
   className?: string;
+  userId?: string | null;
 };
 
-export function TemplatePicker({ onPick, className }: Props) {
+export function TemplatePicker({ onPick, className, userId }: Props) {
   const { history, addToHistory, clearHistory } = useTemplateHistory();
 
   const handleSelectTemplate = (template: Template) => {
@@ -32,8 +33,9 @@ export function TemplatePicker({ onPick, className }: Props) {
 
       <TemplateGrid
         onSelectTemplate={handleSelectTemplate}
-        recentlyUsedIds={history}
+        recentlyUsedIds={userId ? history : []}
         onClearHistory={clearHistory}
+        userId={userId}
       />
     </div>
   );

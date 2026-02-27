@@ -8,6 +8,8 @@ import { Logo } from "@/components/logo";
 import { Card } from "@/components/ui/card";
 import { MessageRole, Fragment, MessageType } from "@prisma/client";
 
+import { MessageMarkdown } from "./message-markdown";
+
 interface UserMessageProps {
     content: string;
 }
@@ -15,8 +17,8 @@ interface UserMessageProps {
 const UserMessage = ({ content }: UserMessageProps) => {
     return (
         <div className="flex justify-end pb-4 pr-2 pl-10">
-            <Card className="rounded-lg bg-muted p-3 shadow-none dorder-nonde max-w-[80%] break-words">
-                {content}
+            <Card className="rounded-lg bg-muted p-3 shadow-none border-none max-w-[80%] wrap-break-word">
+                <MessageMarkdown content={content} />
             </Card>
         </div>
     );
@@ -74,6 +76,15 @@ const AssistantMessage = ({
     type
 }: AssistantMessageProps) => {
 
+    if (type === "SYSTEM") {
+        return (
+            <div className="flex items-center gap-2 px-2 pb-4 pl-12 text-sm text-muted-foreground italic">
+                <span className="animate-pulse">⏳</span>
+                <span>{content}</span>
+            </div>
+        );
+    }
+
     return (
         <div className={cn(
             "flex flex-col group px-2 pb-4",
@@ -87,7 +98,7 @@ const AssistantMessage = ({
                 </span>
             </div>
             <div className="pl-8.5 flex flex-col gap-y-4">
-                <span>{content}</span>
+                <MessageMarkdown content={content} />
                 {fragment && type === "RESULT" && (
                     <FragmentCard
                         fragment={fragment}

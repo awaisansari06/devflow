@@ -301,3 +301,54 @@ iframe,
 img {
   transition: none !important;
 }
+
+/* -------------------------------------------------------
+   Global Scrollbar Styles
+------------------------------------------------------- */
+
+@layer base {
+
+  /* WebKit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/40;
+  }
+
+  /* Make custom scrollbar even thinner */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}

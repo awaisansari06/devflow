@@ -78,15 +78,16 @@ export const Navbar = () => {
         <div className="flex-1 flex justify-center min-w-0">
           <div
             className={cn(
-              "flex items-center gap-1 rounded-full px-2 py-1 text-sm",
-              "border border-border/60 bg-card/40 backdrop-blur-md",
-              "shadow-sm"
+              "flex items-center gap-1 rounded-full px-1 py-1 text-sm transition-all duration-300",
+              "border border-transparent md:hover:border-border/30",
+              "bg-transparent md:hover:bg-card/20 md:hover:backdrop-blur-md"
             )}
           >
             {[
               { label: "Docs", href: "/docs" },
               { label: "Support", href: "/support" },
               { label: "Pricing", href: "/pricing" },
+              { label: "Analytics", href: "/analytics" },
             ].map((item) => {
               const isActive =
                 pathname === item.href || pathname.startsWith(item.href + "/");
@@ -96,12 +97,14 @@ export const Navbar = () => {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "px-3 lg:px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
-                    "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
-                    isActive &&
-                      "text-red-500 bg-red-500/10 shadow-sm border border-red-500/20"
+                    "relative px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-300 ease-out",
+                    "text-muted-foreground hover:text-foreground",
+                    isActive && "text-foreground font-semibold"
                   )}
                 >
+                  {isActive && (
+                    <span className="absolute inset-0 bg-secondary/40 dark:bg-white/10 rounded-full -z-10 shadow-[0_0_12px_rgba(255,255,255,0.05)] dark:shadow-[0_0_12px_rgba(255,255,255,0.1)]" />
+                  )}
                   {item.label}
                 </Link>
               );

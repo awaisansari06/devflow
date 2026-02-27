@@ -1,12 +1,28 @@
 import { z } from "zod";
-import { generateSlug } from "random-word-slugs";
 import { prisma } from "@/lib/db";
 import { consumeCredits } from "@/lib/usage";
 import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 
-
+async function generateTitle(prompt: string) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: `Generate a short, 3-5 word title for a project based on this prompt. Return ONLY the title, no quotes or extra text.\n\nPrompt: ${prompt.substring(0, 500)}` }] }]
+      })
+    });
+    const data = await res.json();
+    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text.trim().replace(/^["']|["']$/g, '');
+    }
+  } catch (error) {
+    console.error("Title generation failed:", error);
+  }
+  return prompt.split("\n")[0].substring(0, 50) || "Untitled Project";
+}
 
 export const projectsRouter = createTRPCRouter({
   getOne: protectedProcedure
@@ -70,12 +86,12 @@ export const projectsRouter = createTRPCRouter({
         }
       }
 
+      const generatedName = await generateTitle(input.value);
+
       const createdProject = await prisma.project.create({
         data: {
           userId: ctx.auth.userId as string,
-          name: generateSlug(2, {
-            format: "kebab",
-          }),
+          name: generatedName,
           messages: {
             create: {
               content: input.value,

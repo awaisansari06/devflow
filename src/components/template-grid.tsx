@@ -23,6 +23,7 @@ interface TemplateGridProps {
     onClearHistory?: () => void;
     className?: string;
     initialLimit?: number; // Number of templates to show initially
+    userId?: string | null; // User ID to control Recently Used visibility
 }
 
 export function TemplateGrid({
@@ -31,6 +32,7 @@ export function TemplateGrid({
     onClearHistory,
     className,
     initialLimit = 6,
+    userId,
 }: TemplateGridProps) {
     const [selectedCategory, setSelectedCategory] =
         useState<TemplateCategory>("all");
@@ -100,7 +102,7 @@ export function TemplateGrid({
     return (
         <div className={cn("w-full space-y-6", className)}>
             {/* Recently Used Section */}
-            {recentTemplates.length > 0 && !searchQuery && selectedCategory === "all" && (
+            {userId && recentTemplates.length > 0 && !searchQuery && selectedCategory === "all" && (
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -127,6 +129,11 @@ export function TemplateGrid({
                                 isRecentlyUsed
                             />
                         ))}
+                    </div>
+
+                    {/* Divider for visual breathing room */}
+                    <div className="my-8">
+                        <div className="h-px w-full bg-linear-to-r from-transparent via-border/40 to-transparent" />
                     </div>
                 </div>
             )}

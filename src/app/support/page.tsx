@@ -9,7 +9,15 @@ import {
     Bug,
     Sparkles,
     ArrowRight,
+    Activity,
 } from "lucide-react";
+
+import { FAQ } from "@/components/faq";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const fadeUp = {
     hidden: { opacity: 0, y: 18 },
@@ -69,90 +77,88 @@ export default function SupportPage() {
                     </div>
                 </motion.div>
 
-                {/* Support options */}
-                <motion.div variants={fadeUp} className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                        {
-                            icon: <Mail className="h-5 w-5 text-primary" />,
-                            title: "Email us",
-                            desc: "Best for billing, account issues, or private requests.",
-                            action: "support@devflow.com",
-                            href: "mailto:support@devflow.com",
-                        },
-                        {
-                            icon: <MessageSquare className="h-5 w-5 text-primary" />,
-                            title: "Community",
-                            desc: "Ask questions, share builds, get feedback from others.",
-                            action: "Join Discord",
-                            href: "https://discord.gg/",
-                        },
-                        {
-                            icon: <Bug className="h-5 w-5 text-primary" />,
-                            title: "Report a bug",
-                            desc: "Found something broken? Send steps + screenshots.",
-                            action: "Open GitHub Issue",
-                            href: "https://github.com/",
-                        },
-                    ].map((x, i) => (
-                        <a
-                            key={i}
-                            href={x.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={`rounded-3xl border bg-card/70 backdrop-blur p-6 ${cardHover}`}
-                        >
-                            <div className="flex items-start gap-3">
-                                <div className="h-11 w-11 rounded-2xl bg-muted flex items-center justify-center">
-                                    {x.icon}
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="font-semibold">{x.title}</h3>
-                                    <p className="text-sm text-muted-foreground mt-1">{x.desc}</p>
-                                    <div className="mt-4 inline-flex items-center gap-2 text-sm text-primary font-medium">
-                                        {x.action} <ArrowRight className="h-4 w-4" />
-                                    </div>
-                                </div>
+                <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Contact Form */}
+                    <motion.div variants={fadeUp} className="rounded-3xl border bg-card/70 backdrop-blur p-6 md:p-8">
+                        <h2 className="text-xl font-semibold">Send a Message</h2>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Fill out the form below and our team will get back to you within 24 hours.
+                        </p>
+                        <form className="mt-6 space-y-4" onSubmit={(e) => {
+                            e.preventDefault();
+                            toast.success("Message sent! We'll get back to you shortly.");
+                            (e.target as HTMLFormElement).reset();
+                        }}>
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Name</Label>
+                                <Input id="name" required placeholder="John Doe" />
                             </div>
-                        </a>
-                    ))}
-                </motion.div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" type="email" required placeholder="john@example.com" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="message">Message</Label>
+                                <Textarea id="message" required placeholder="How can we help?" className="min-h-[120px] resize-y" />
+                            </div>
+                            <Button type="submit" className="w-full">
+                                Send Message
+                            </Button>
+                        </form>
+                    </motion.div>
 
-                {/* FAQ */}
-                <motion.div
-                    variants={fadeUp}
-                    className="mt-10 rounded-3xl border bg-card/70 backdrop-blur p-6 md:p-8"
-                >
-                    <h2 className="text-xl font-semibold">Support FAQ</h2>
-
-                    <div className="mt-4 space-y-3">
+                    {/* Support options */}
+                    <motion.div variants={stagger} className="grid grid-cols-1 gap-4">
                         {[
                             {
-                                q: "My generated app isn't working, what do I do?",
-                                a: "Try refining your prompt. Be specific about features. If it persists, check the 'console' for errors and report a bug with the prompt ID.",
+                                icon: <Mail className="h-5 w-5 text-primary" />,
+                                title: "Email us",
+                                desc: "Best for billing, account issues, or private requests.",
+                                action: "support@devflow.com",
+                                href: "mailto:support@devflow.com",
                             },
                             {
-                                q: "How do I deploy to Vercel?",
-                                a: "Push your code to GitHub, then import the repo in Vercel. Ensure you add the necessary environment variables (DATABASE_URL, CLERK_keys).",
+                                icon: <MessageSquare className="h-5 w-5 text-primary" />,
+                                title: "Community",
+                                desc: "Ask questions, share builds, get feedback from others.",
+                                action: "Join Discord",
+                                href: "https://discord.gg/",
                             },
                             {
-                                q: "Can I use my own database?",
-                                a: "Yes. In your `schema.prisma`, you can update the provider and url to point to any Postgres database, like Supabase or Railway.",
+                                icon: <Activity className="h-5 w-5 text-primary" />,
+                                title: "System Status",
+                                desc: "Check real-time uptime of API and Agent generation pipelines.",
+                                action: "status.devflow.com",
+                                href: "#",
                             },
-                        ].map((item, idx) => (
-                            <details
-                                key={idx}
-                                className="group rounded-2xl border bg-background/40 px-5 py-4"
+                        ].map((x, i) => (
+                            <a
+                                key={i}
+                                href={x.href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={`rounded-3xl border bg-card/70 backdrop-blur p-6 ${cardHover}`}
                             >
-                                <summary className="cursor-pointer list-none font-medium flex items-center justify-between">
-                                    <span>{item.q}</span>
-                                    <span className="text-muted-foreground group-open:rotate-180 transition">
-                                        ▾
-                                    </span>
-                                </summary>
-                                <p className="mt-3 text-sm text-muted-foreground">{item.a}</p>
-                            </details>
+                                <div className="flex items-start gap-3">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                            {x.icon}
+                                            <h3 className="font-semibold">{x.title}</h3>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mt-2">{x.desc}</p>
+                                        <div className="mt-3 inline-flex items-center gap-2 text-sm text-primary font-medium">
+                                            {x.action} <ArrowRight className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
                         ))}
-                    </div>
+                    </motion.div>
+                </div>
+
+                {/* FAQ */}
+                <motion.div variants={fadeUp} className="mt-16">
+                    <FAQ />
                 </motion.div>
                 <motion.p
                     variants={fadeUp}

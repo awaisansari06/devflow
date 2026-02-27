@@ -11,6 +11,14 @@ import {
     LayoutDashboard,
     Sparkles,
     ArrowRight,
+    SearchCode,
+    Cpu,
+    Briefcase,
+    ShoppingCart,
+    Users,
+    AlertTriangle,
+    Clock,
+    RefreshCw
 } from "lucide-react";
 
 const fadeUp = {
@@ -82,6 +90,57 @@ const docsContent = {
             a: "Yes, we provision a Postgres database for your project automatically using Neon or similar providers.",
         },
     ],
+    templates: [
+        {
+            icon: <LayoutDashboard className="h-5 w-5 text-primary" />,
+            title: "Dashboards",
+            desc: "Admin panels with charts, data tables, and user management pre-configured.",
+        },
+        {
+            icon: <SearchCode className="h-5 w-5 text-primary" />,
+            title: "Landing Pages",
+            desc: "Marketing sites optimized for conversions with hero sections, features, and pricing.",
+        },
+        {
+            icon: <Cpu className="h-5 w-5 text-primary" />,
+            title: "Clone Templates",
+            desc: "Reverse-engineered popular layouts (e.g., streaming platforms, social feeds) to jumpstart your idea.",
+        }
+    ],
+    examples: [
+        {
+            icon: <Briefcase className="h-5 w-5 text-amber-500" />,
+            title: "Dental CRM System",
+            desc: "A complete management tool with patient scheduling, treatment plans, and billing dashboards.",
+        },
+        {
+            icon: <ShoppingCart className="h-5 w-5 text-blue-500" />,
+            title: "Niche E-Commerce",
+            desc: "Custom storefronts with product catalogs, shopping carts, and integrated Stripe checkout flows.",
+        },
+        {
+            icon: <Users className="h-5 w-5 text-emerald-500" />,
+            title: "Community Platform",
+            desc: "Social spaces with user profiles, activity feeds, and threaded discussions.",
+        }
+    ],
+    limitations: [
+        {
+            icon: <Clock className="h-5 w-5 text-destructive" />,
+            title: "Generation Timeouts",
+            desc: "Complex prompts may take up to 2-3 minutes. If the agent times out, simply retry or break your prompt into smaller chunks.",
+        },
+        {
+            icon: <RefreshCw className="h-5 w-5 text-primary" />,
+            title: "Iterative Refinement",
+            desc: "The agent works best iteratively. Start with a core feature, then use follow-up messages to add styling or edge cases.",
+        },
+        {
+            icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+            title: "Package Limitations",
+            desc: "The agent runs in a secure sandbox. It uses a curated list of standard npm packages. Avoid requesting obscure experimental libraries.",
+        }
+    ]
 };
 
 export default function DocsPage() {
@@ -173,6 +232,63 @@ export default function DocsPage() {
                                         </p>
                                     </div>
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Templates Explanation */}
+                <motion.div variants={fadeUp} className="mt-10 rounded-3xl border bg-card/70 backdrop-blur p-6 md:p-8">
+                    <h2 className="text-xl font-semibold">Available Templates</h2>
+                    <p className="text-sm text-muted-foreground mt-1 mb-6">
+                        Start with a template to give the AI a solid foundation for your specific use case.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {docsContent.templates.map((x, i) => (
+                            <div key={i} className={`rounded-2xl border bg-background/50 p-5 ${cardHover}`}>
+                                <div className="flex items-center gap-2 text-sm font-semibold">
+                                    {x.icon}
+                                    {x.title}
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{x.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Examples */}
+                <motion.div variants={fadeUp} className="mt-10 rounded-3xl border bg-card/70 backdrop-blur p-6 md:p-8">
+                    <h2 className="text-xl font-semibold">What You Can Build</h2>
+                    <p className="text-sm text-muted-foreground mt-1 mb-6">
+                        DevFlow is capable of generating complex, production-ready applications.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {docsContent.examples.map((x, i) => (
+                            <div key={i} className={`rounded-2xl border bg-background/50 p-5 ${cardHover}`}>
+                                <div className="flex items-center gap-2 text-sm font-semibold">
+                                    {x.icon}
+                                    {x.title}
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{x.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Limitations & Tips */}
+                <motion.div variants={fadeUp} className="mt-10 rounded-3xl border border-primary/20 bg-primary/5 backdrop-blur p-6 md:p-8">
+                    <h2 className="text-xl font-semibold text-primary">Best Practices & Limitations</h2>
+                    <p className="text-sm text-muted-foreground mt-1 mb-6">
+                        Tips to get the best results from the AI agent.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {docsContent.limitations.map((x, i) => (
+                            <div key={i} className={`rounded-2xl border bg-background/80 p-5 ${cardHover}`}>
+                                <div className="flex items-center gap-2 text-sm font-semibold">
+                                    {x.icon}
+                                    {x.title}
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{x.desc}</p>
                             </div>
                         ))}
                     </div>

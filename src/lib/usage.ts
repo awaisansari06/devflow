@@ -5,7 +5,7 @@ import { prisma } from "./db";
 const FREE_POINTS = 2;
 const PRO_POINTS = 102;
 const DURATION = 30 * 24 * 60 * 60; // 30 days
-const GENERAION_COST = 1;
+const GENERATION_COST = 1;
 
 export async function getUsageTracker() {
     const { has } = await auth();
@@ -29,7 +29,7 @@ export async function consumeCredits() {
     }
 
     const usageTracker = await getUsageTracker();
-    const result = await usageTracker.consume(userId, GENERAION_COST);
+    const result = await usageTracker.consume(userId, GENERATION_COST);
     return result;
 }
 

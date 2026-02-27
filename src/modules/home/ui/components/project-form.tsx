@@ -32,7 +32,7 @@ const formSchema = z.object({
         .max(10000, { message: "Value is too long" }),
 });
 
-export const ProjectForm = () => {
+export const ProjectForm = ({ userId }: { userId?: string | null }) => {
     const router = useRouter();
     const trpc = useTRPC();
     const clerk = useClerk();
@@ -148,7 +148,7 @@ export const ProjectForm = () => {
                         </Button>
                     </div>
                 </form>
-                <TemplatePicker onPick={onSelect} />
+                {userId && <TemplatePicker onPick={onSelect} userId={userId} />}
             </section>
         </Form>
     );

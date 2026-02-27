@@ -66,13 +66,13 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }: TreeProps) => {
     const [name, ...items] = Array.isArray(item) ? item : [item];
     const currentPath = parentPath ? `${parentPath}/${name}` : name;
 
-    if(!items.length) {
+    if (!items.length) {
         //it's a file
         const isSelected = selectedValue === currentPath;
         return (
             <SidebarMenuButton
                 isActive={isSelected}
-                className="data-[active=true]:bg-transparent"
+                className="data-[active=true]:bg-transparent py-3 sm:py-1.5 h-auto"
                 onClick={() => onSelect?.(currentPath)}
             >
                 <FileIcon />
@@ -91,7 +91,7 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }: TreeProps) => {
                 defaultOpen
             >
                 <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
+                    <SidebarMenuButton className="py-3 sm:py-1.5 h-auto">
                         <ChevronRightIcon className="transition-transform" />
                         <FolderIcon />
                         <span className="truncate">

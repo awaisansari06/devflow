@@ -107,7 +107,7 @@ export const CodeView = ({
             </div>
 
             {/* Code content */}
-            <div className="flex-1 overflow-auto p-2 custom-scrollbar">
+            <div className="flex-1 overflow-auto p-2 pb-28 md:pb-2 custom-scrollbar">
                 <pre className="min-w-fit line-numbers">
                     <code ref={codeRef} className={`language-${lang}`}>{code}</code>
                 </pre>

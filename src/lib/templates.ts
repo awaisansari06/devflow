@@ -64,7 +64,7 @@ DESIGN REQUIREMENTS - VERY IMPORTANT:
 - Use proper spacing (p-4, p-6, gap-4) for a clean, organized layout
 - Implement a modern, polished UI that looks professional and production-ready
 - Avoid pure black/white - use slate-900 and white instead
-- Add visual interest with gradients on hero sections (from-blue-500 to-purple-600)
+- Add visual interest with gradients on hero sections
 - Ensure all interactive elements have clear hover and active states
 - The final result should look like a real, professional application - NOT a basic prototype`;
 

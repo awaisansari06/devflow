@@ -5,6 +5,8 @@ import { ProjectsSection } from "@/modules/home/ui/components/projects-section";
 import { Sparkles, BrainCircuit, Zap } from "lucide-react";
 import { MotionDiv, pageVariants, itemVariants } from "@/components/motion";
 import { FAQ } from "@/components/faq";
+import { Button } from "@/components/ui/button";
+import { SignInButton } from "@clerk/nextjs";
 
 export const HomeView = ({ userId }: { userId: string | null }) => {
     return (
@@ -19,11 +21,13 @@ export const HomeView = ({ userId }: { userId: string | null }) => {
                 <div className="pointer-events-none absolute left-1/2 top-28 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl -z-10 dark:bg-primary/15" />
 
                 <section className="space-y-6 pt-20 pb-8 md:pt-24">
-                    {/* Badge */}
+                    {/* Badge with Pricing Hint */}
                     <MotionDiv variants={itemVariants} className="flex justify-center">
                         <div className="inline-flex items-center gap-2 rounded-full border bg-card/70 backdrop-blur px-4 py-2 text-xs text-muted-foreground">
                             <span className="text-primary">⚡</span>
                             Build apps faster with AI
+                            <span className="text-border">•</span>
+                            <span className="text-primary font-medium">Free to start</span>
                         </div>
                     </MotionDiv>
 
@@ -35,16 +39,42 @@ export const HomeView = ({ userId }: { userId: string | null }) => {
                         </h1>
                     </MotionDiv>
 
-                    {/* Subtitle */}
-                    <MotionDiv variants={itemVariants}>
-                        <p className="mt-4 text-base md:text-lg text-foreground/70 text-center">
+                    {/* Subtitle with Emotional Hook */}
+                    <MotionDiv variants={itemVariants} className="space-y-2">
+                        <p className="text-base md:text-lg text-foreground/70 text-center">
                             Create apps and websites by chatting with AI
+                        </p>
+                        <p className="text-sm md:text-base text-primary/80 text-center font-medium">
+                            From idea to deployed app in minutes.
                         </p>
                     </MotionDiv>
 
-                    {/* Form */}
-                    <MotionDiv variants={itemVariants} className="max-w-3xl mx-auto w-full">
-                        <ProjectForm />
+                    {/* Form with CTA */}
+                    <MotionDiv variants={itemVariants} className="max-w-3xl mx-auto w-full space-y-4">
+                        <ProjectForm userId={userId} />
+
+                        {/* Primary CTA - Only show when not logged in */}
+                        {!userId && (
+                            <div className="flex flex-col items-center gap-3 pt-2">
+                                <SignInButton mode="modal">
+                                    <Button
+                                        size="lg"
+                                        className="gap-2 shadow-lg shadow-primary/20"
+                                    >
+                                        <Sparkles className="h-4 w-4" />
+                                        Start Building Free
+                                    </Button>
+                                </SignInButton>
+
+                                {/* Subtle secondary CTA */}
+                                <SignInButton mode="modal">
+                                    <button className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
+                                        Start building for free
+                                        <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                                    </button>
+                                </SignInButton>
+                            </div>
+                        )}
                     </MotionDiv>
 
                     {/* Features */}
@@ -87,6 +117,41 @@ export const HomeView = ({ userId }: { userId: string | null }) => {
                         ))}
                     </MotionDiv>
                 </section>
+
+                {/* Visual Break - Gradient Divider */}
+                <MotionDiv variants={itemVariants} className="py-12">
+                    <div className="h-px w-full bg-linear-to-r from-transparent via-border to-transparent" />
+                </MotionDiv>
+
+                {/* Why DevFlow Section */}
+                <MotionDiv variants={itemVariants} className="py-8 pb-16">
+                    <div className="text-center space-y-8 max-w-3xl mx-auto px-4">
+                        <h2 className="text-2xl md:text-3xl font-semibold">Why DevFlow?</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+                            <div className="space-y-3">
+                                <div className="text-lg">⚡</div>
+                                <div className="font-semibold text-primary">Lightning Fast</div>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    From idea to deployed app in minutes, not days
+                                </p>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="text-lg">🎯</div>
+                                <div className="font-semibold text-primary">Production Ready</div>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    Generate clean, maintainable code you can actually use
+                                </p>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="text-lg">🔒</div>
+                                <div className="font-semibold text-primary">Your Code, Your Control</div>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    Full access to source code, deploy anywhere
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </MotionDiv>
 
                 {/* Projects List */}
                 {userId && (

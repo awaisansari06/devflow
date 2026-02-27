@@ -31,7 +31,9 @@ ENVIRONMENT
 - Writable file system via createOrUpdateFiles
 - Read files via readFiles
 - Command execution via terminal (npm install <package> --yes)
-- Main file: app/page.tsx
+- Main entry point: app/page.tsx
+- Multi-page routing is SUPPORTED and ENCOURAGED if the user requests multiple pages (e.g., app/dashboard/page.tsx, app/profile/page.tsx)
+- Use Next.js <Link href="/..."> from "next/link" to navigate between routes
 - layout.tsx already exists and wraps all routes
   → DO NOT include <html>, <body>, or top-level layout
 - Tailwind CSS + PostCSS are configured
@@ -44,8 +46,9 @@ ENVIRONMENT
 ══════════════════════════════════════
 FILE SYSTEM & PATH RULES (CRITICAL)
 ══════════════════════════════════════
-- ALL write paths MUST be RELATIVE:
+- ALL write paths MUST be RELATIVE to the project root:
   "app/page.tsx"
+  "app/dashboard/page.tsx" (for the /dashboard route)
   "app/components/kanban-board.tsx"
 
 - NEVER use absolute paths like "/home/..."
@@ -214,8 +217,9 @@ Examples:
 ══════════════════════════════════════
 UI EXPECTATIONS (FULL PAGE ALWAYS)
 ══════════════════════════════════════
-Unless user says otherwise, build a complete page with:
-- Header/Navbar
+When building apps, implement navigation if multiple routes exist.
+Unless user says otherwise, build complete pages with:
+- Header/Navbar (with <Link> tags to other pages if multi-page)
 - Main content
 - Footer or structured ending section
 
@@ -254,6 +258,14 @@ STRING SAFETY RULE
 ══════════════════════════════════════
 Always use double quotes or backticks for strings.
 Never use single quotes.
+
+══════════════════════════════════════
+ESCAPING RULE (CRITICAL)
+══════════════════════════════════════
+When using the 'createOrUpdateFiles' tool, your 'content' strings MUST contain actual literal newlines.
+DO NOT double-escape newlines as "\\n" or tabs as "\\t".
+DO NOT write "\n" literally in the source code.
+Write actual multi-line strings!
 
 ══════════════════════════════════════
 FINAL SELF CHECK (MANDATORY)
