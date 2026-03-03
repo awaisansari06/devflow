@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAgent, gemini } from "@inngest/agent-kit";
 
+
 export async function POST(req: NextRequest) {
     try {
         const { userId } = await auth();

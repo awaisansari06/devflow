@@ -29,7 +29,10 @@ const isAuthed = t.middleware(({ ctx, next }) => {
 
   return next({
     ctx: {
-      auth: ctx.auth,
+      auth: {
+        ...ctx.auth,
+        userId: ctx.auth.userId, // Now guaranteed non-null by the check above
+      },
     },
   })
 })

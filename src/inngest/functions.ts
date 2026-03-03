@@ -47,19 +47,35 @@ export const codeAgentFunction = inngest.createFunction(
         const messages = await prisma.message.findMany({
           where: {
             projectId: event.data.projectId,
+            type: { in: ["RESULT", "ERROR"] }, // Only include main messages, skip LOG/SYSTEM
+          },
+          include: {
+            fragment: true, // Include generated code fragments
           },
           orderBy: {
-            createdAt: "asc", // Changed to "asc" to provide chronological order
+            createdAt: "asc",
           },
-          take: 5,
+          take: 10,
         });
 
         for (const message of messages) {
+          let content = message.content;
+
+          // For assistant messages with fragments, include the generated files
+          // so the agent can iterate on existing code
+          if (message.role === "ASSISTANT" && message.fragment?.files) {
+            const files = message.fragment.files as Record<string, string>;
+            const fileList = Object.entries(files)
+              .map(([path, code]) => `--- ${path} ---\n${code}`)
+              .join("\n\n");
+            content = `${content}\n\n<previously_generated_files>\n${fileList}\n</previously_generated_files>`;
+          }
+
           formattedMessages.push({
             type: "text",
             role: message.role === "ASSISTANT" ? "assistant" : "user",
-            content: message.content,
-          })
+            content,
+          });
         }
 
         return formattedMessages;
@@ -356,11 +372,25 @@ export const codeAgentFunction = inngest.createFunction(
     } catch (error) {
       console.error("Inngest agent error:", error);
       generationFailed = true;
+
+      // Build a descriptive error message based on what step failed
+      const errMsg = error instanceof Error ? error.message : String(error);
+      let failureContext = "code generation";
+      if (errMsg.includes("sandbox") || errMsg.includes("Sandbox")) {
+        failureContext = "sandbox creation";
+      } else if (errMsg.includes("write") || errMsg.includes("file")) {
+        failureContext = "writing files to the sandbox";
+      } else if (errMsg.includes("rate") || errMsg.includes("429") || errMsg.includes("quota")) {
+        failureContext = "AI API rate limits";
+      } else if (errMsg.includes("timeout") || errMsg.includes("TIMEOUT")) {
+        failureContext = "a timeout during generation";
+      }
+
       await step.run("report-failure", async () => {
         return await prisma.message.create({
           data: {
             projectId: event.data.projectId,
-            content: "The agent encountered an unexpected error. This often happens due to API limits or invalid configurations. Please try again with a different prompt.",
+            content: `Generation failed during **${failureContext}**. ${errMsg.length < 200 ? `Details: ${errMsg}` : "This often happens due to API limits or complex prompts."} Please try again.`,
             role: "ASSISTANT",
             type: "ERROR",
           },

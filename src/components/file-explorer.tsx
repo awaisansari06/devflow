@@ -202,7 +202,7 @@ export const FileExplorer = ({
                                 <SheetHeader className="px-4 py-2 border-b">
                                     <SheetTitle className="text-sm">Files</SheetTitle>
                                 </SheetHeader>
-                                <div className="p-0 h-full overflow-y-auto">
+                                <div className="p-0 h-full overflow-y-auto custom-scrollbar">
                                     {SidebarContent}
                                 </div>
                             </SheetContent>

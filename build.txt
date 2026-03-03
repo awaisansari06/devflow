@@ -1,0 +1,45 @@
+﻿
+> devflow@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.4 (Turbopack)
+- Environments: .env
+
+node.exe : ΓÜá The "middleware" file 
+convention is deprecated. Please use 
+"proxy" instead. Learn more: https://
+nextjs.org/docs/messages/middleware-t
+o-proxy
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: (ΓÜá The "middle...lewar  
+  e-to-proxy:String) [], RemoteExc   
+ eption
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 20.9s
+  Running TypeScript ...
+  Collecting page data using 21 workers ...
+Error: Failed to load external 
+module node:process: TypeError: 
+Native module not found: node:process
+    at module evaluation (A:\devflow\
+.next\server\edge\chunks\_779776a4._.
+js:102:17105)
+    at <unknown> (A:\devflow\.next\se
+rver\edge\chunks\[root-of-the-server]
+__28a47358._.js:2:6570)
+
+> Build error occurred
+Error: Failed to collect page data 
+for /api/ai/explain
+    at ignore-listed frames {
+  type: 'Error'
+}

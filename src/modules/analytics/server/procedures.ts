@@ -6,7 +6,7 @@ import { subDays, format } from "date-fns";
 
 export const analyticsRouter = createTRPCRouter({
     getStats: protectedProcedure.query(async ({ ctx }) => {
-        const userId = ctx.auth.userId as string;
+        const userId = ctx.auth.userId;
         const now = new Date();
         const thirtyDaysAgo = subDays(now, 30);
         const sixtyDaysAgo = subDays(now, 60);

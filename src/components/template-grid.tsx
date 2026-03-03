@@ -86,6 +86,7 @@ export function TemplateGrid({
         "games",
         "tools",
         "e-commerce",
+        "website-clones",
     ];
 
     // Reset showAll when category or search changes

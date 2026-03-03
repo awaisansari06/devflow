@@ -35,7 +35,7 @@ export const projectsRouter = createTRPCRouter({
       const existingProject = await prisma.project.findUnique({
         where: {
           id: input.id,
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
         },
       });
 
@@ -51,7 +51,7 @@ export const projectsRouter = createTRPCRouter({
   getMany: protectedProcedure.query(async ({ ctx }) => {
     const projects = await prisma.project.findMany({
       where: {
-        userId: ctx.auth.userId as string,
+        userId: ctx.auth.userId,
       },
       orderBy: {
         updatedAt: "desc"
@@ -90,7 +90,7 @@ export const projectsRouter = createTRPCRouter({
 
       const createdProject = await prisma.project.create({
         data: {
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
           name: generatedName,
           messages: {
             create: {
@@ -123,7 +123,7 @@ export const projectsRouter = createTRPCRouter({
       const existingProject = await prisma.project.findUnique({
         where: {
           id: input.id,
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
         },
       });
 
@@ -155,7 +155,7 @@ export const projectsRouter = createTRPCRouter({
       const existingProject = await prisma.project.findUnique({
         where: {
           id: input.id,
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
         },
       });
 
@@ -181,21 +181,14 @@ export const projectsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      console.log("TOGGLE FAVORITE CALLED");
-      console.log("Input ID:", input.id);
-      console.log("User ID:", ctx.auth.userId);
-
       const existingProject = await prisma.project.findFirst({
         where: {
           id: input.id,
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
         },
       });
 
-      console.log("Existing Project Found:", !!existingProject);
-
       if (!existingProject) {
-        console.log("ERROR: Project not found for user");
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Project not found",
@@ -210,8 +203,6 @@ export const projectsRouter = createTRPCRouter({
           isFavorite: !existingProject.isFavorite,
         },
       });
-
-      console.log("Updated Project Favorite Status:", updatedProject.isFavorite);
 
       return updatedProject;
     }),

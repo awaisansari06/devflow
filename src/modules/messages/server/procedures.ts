@@ -18,7 +18,7 @@ export const messageRouter = createTRPCRouter({
         where: {
           projectId: input.projectId,
           project: {
-            userId: ctx.auth.userId as string,
+            userId: ctx.auth.userId,
           },
         },
         include: {
@@ -44,7 +44,7 @@ export const messageRouter = createTRPCRouter({
       const existingProject = await prisma.project.findUnique({
         where: {
           id: input.projectId,
-          userId: ctx.auth.userId as string,
+          userId: ctx.auth.userId,
         },
       })
 
