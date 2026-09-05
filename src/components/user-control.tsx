@@ -21,38 +21,46 @@ interface Props {
     showName?: boolean;
 };
 
-export const UserControl = ({ showName }: Props) => {
-    const currentTheme = useCurrentTheme();
+export const ThemeDialog = () => {
     const { color, updateColor, resetColor } = useThemeColor();
     const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
     return (
+        <Dialog open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-9 cursor-pointer"
+                    title="Theme & Colors"
+                    aria-label="Customize theme and colors"
+                >
+                    <PaletteIcon className="size-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Theme & Appearance</DialogTitle>
+                    <DialogDescription>
+                        Switch theme mode and personalize your accent color
+                    </DialogDescription>
+                </DialogHeader>
+                <ColorPicker
+                    value={color}
+                    onChange={updateColor}
+                    onReset={resetColor}
+                />
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+export const UserControl = ({ showName }: Props) => {
+    const currentTheme = useCurrentTheme();
+
+    return (
         <div className="flex items-center gap-2">
-            <Dialog open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
-                <DialogTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-9"
-                        title="Customize Colors"
-                    >
-                        <PaletteIcon className="size-4" />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Customize Colors</DialogTitle>
-                        <DialogDescription>
-                            Choose a color preset or create your own custom accent color
-                        </DialogDescription>
-                    </DialogHeader>
-                    <ColorPicker
-                        value={color}
-                        onChange={updateColor}
-                        onReset={resetColor}
-                    />
-                </DialogContent>
-            </Dialog>
+            <ThemeDialog />
 
             <UserButton
                 showName={showName}
@@ -68,3 +76,4 @@ export const UserControl = ({ showName }: Props) => {
         </div>
     );
 };
+

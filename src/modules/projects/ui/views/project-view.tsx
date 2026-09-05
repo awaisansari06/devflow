@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { EyeIcon, CodeIcon, CrownIcon, DownloadIcon, MaximizeIcon, MinimizeIcon, MessageSquareIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -64,6 +64,10 @@ export const ProjectView = ({ projectId }: Props) => {
             setIsExporting(false);
         }
     };
+
+    const handleFilesUpdated = useCallback((updatedFiles: Record<string, string>) => {
+        setActiveFragment((prev) => (prev ? { ...prev, files: updatedFiles } : null));
+    }, []);
 
     // Keyboard shortcuts
     useKeyboardShortcut([
@@ -145,7 +149,11 @@ export const ProjectView = ({ projectId }: Props) => {
                     </div>
                 </div>
                 <div className="h-[calc(100vh-64px)]">
-                    <FragmentWeb data={activeFragment} />
+                    <FragmentWeb
+                        data={activeFragment}
+                        projectId={projectId}
+                        onFilesUpdated={handleFilesUpdated}
+                    />
                 </div>
             </div>
         );
@@ -204,6 +212,7 @@ export const ProjectView = ({ projectId }: Props) => {
                                         <Button
                                             variant="ghost"
                                             size="sm"
+                                            aria-label="Toggle full-screen preview"
                                             onClick={() => setIsFullScreen(true)}
                                             className="ml-2 h-8"
                                         >
@@ -241,6 +250,8 @@ export const ProjectView = ({ projectId }: Props) => {
                                 {!!activeFragment && (
                                     <FragmentWeb
                                         data={activeFragment}
+                                        projectId={projectId}
+                                        onFilesUpdated={handleFilesUpdated}
                                         onFullScreen={() => setIsFullScreen(true)}
                                     />
                                 )}
@@ -303,6 +314,8 @@ export const ProjectView = ({ projectId }: Props) => {
                                     {!!activeFragment ? (
                                         <FragmentWeb
                                             data={activeFragment}
+                                            projectId={projectId}
+                                            onFilesUpdated={handleFilesUpdated}
                                             onFullScreen={() => setIsFullScreen(true)}
                                         />
                                     ) : (

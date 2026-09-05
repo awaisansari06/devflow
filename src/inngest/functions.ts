@@ -5,6 +5,7 @@ import { PROMPT } from "../prompt";
 import { prisma } from "@/lib/db";
 import { inngest } from "./client";
 import { getSandbox, lastAssistantTextMessageContent, parseAgentOutput } from "./utils";
+import { AI_MODELS } from "@/config/ai-models";
 
 // Default: 15 minutes. Override via E2B_SANDBOX_TIMEOUT_MS env var.
 const SANDBOX_TIMEOUT_MS = Number(process.env.E2B_SANDBOX_TIMEOUT_MS) || 60_000 * 15;
@@ -96,7 +97,7 @@ export const codeAgentFunction = inngest.createFunction(
         system: PROMPT,
         description: "An expert coding agent",
         model: gemini({
-          model: "gemini-3-flash-preview"
+          model: AI_MODELS.CODE_AGENT,
         }),
         tools: [
           createTool({
@@ -301,7 +302,7 @@ export const codeAgentFunction = inngest.createFunction(
         system: `Based on the <task_summary>, generate a JSON response with two fields.\n"title": A short, descriptive title (Max 3 words, Title Case, no punctuation).\n"response": A short, user-friendly message (1-3 sentences) explaining what was built.`,
         description: "An output optimizer that generates both the fragment title and response",
         model: gemini({
-          model: "gemini-2.0-flash"
+          model: AI_MODELS.OUTPUT_OPTIMIZER,
         }),
       });
 
@@ -311,17 +312,23 @@ export const codeAgentFunction = inngest.createFunction(
       if (result.state.data.summary) {
         const optimized = await outputOptimizer.run(result.state.data.summary);
         try {
-          // Parse string since model might return markdown formatted JSON
-          let cleanedOut = parseAgentOutput(optimized.output);
-          if (cleanedOut.startsWith("\`\`\`json")) {
-            cleanedOut = cleanedOut.replace("\`\`\`json", "").replace("\`\`\`", "");
-          }
-          const parsed = JSON.parse(cleanedOut) as any;
+          let rawOutput = parseAgentOutput(optimized.output).trim();
+          // Extract JSON block even if model includes conversational text or markdown fences
+          const jsonMatch = rawOutput.match(/\{[\s\S]*\}/);
+          const jsonStr = jsonMatch ? jsonMatch[0] : rawOutput;
+          const parsed = JSON.parse(jsonStr) as Record<string, unknown>;
 
-          if (parsed.title) fragmentTitleOutput = parsed.title;
-          if (parsed.response) responseOutput = parsed.response;
+          if (typeof parsed?.title === "string" && parsed.title.trim()) {
+            fragmentTitleOutput = parsed.title.trim();
+          }
+          if (typeof parsed?.response === "string" && parsed.response.trim()) {
+            responseOutput = parsed.response.trim();
+          }
         } catch (e) {
           console.error("Failed to parse output-optimizer JSON:", e);
+          if (result.state.data.summary) {
+            responseOutput = result.state.data.summary;
+          }
         }
       }
 

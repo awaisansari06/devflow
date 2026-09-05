@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { consumeCredits } from "@/lib/usage";
+import { consumeCredits, refundCredits } from "@/lib/usage";
 import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
+import { AI_MODELS } from "@/config/ai-models";
 
 async function generateTitle(prompt: string) {
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${AI_MODELS.TITLE_AGENT}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -86,37 +87,47 @@ export const projectsRouter = createTRPCRouter({
         }
       }
 
-      const generatedName = await generateTitle(input.value);
+      try {
+        const generatedName = await generateTitle(input.value);
 
-      const createdProject = await prisma.project.create({
-        data: {
-          userId: ctx.auth.userId,
-          name: generatedName,
-          messages: {
-            create: {
-              content: input.value,
-              role: "USER",
-              type: "RESULT",
+        const createdProject = await prisma.project.create({
+          data: {
+            userId: ctx.auth.userId,
+            name: generatedName,
+            messages: {
+              create: {
+                content: input.value,
+                role: "USER",
+                type: "RESULT",
+              },
             },
           },
-        },
-      });
+        });
 
-      await inngest.send({
-        name: "code-agent/run",
-        data: {
-          value: input.value,
-          projectId: createdProject.id,
-        }
-      });
+        await inngest.send({
+          name: "code-agent/run",
+          data: {
+            value: input.value,
+            projectId: createdProject.id,
+          }
+        });
 
-      return createdProject;
+        return createdProject;
+      } catch (err) {
+        await refundCredits(ctx.auth.userId);
+        if (err instanceof TRPCError) throw err;
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to initialize project",
+          cause: err,
+        });
+      }
     }),
   update: protectedProcedure
     .input(
       z.object({
         id: z.string().min(1, { message: "ID is required" }),
-        name: z.string().min(1, { message: "Name is required" }),
+        name: z.string().min(1, { message: "Name is required" }).max(100, { message: "Name is too long" }),
       })
     )
     .mutation(async ({ input, ctx }) => {

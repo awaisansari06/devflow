@@ -84,10 +84,10 @@ export function rgbToHex(rgb: string): string {
  * e.g. stripTailwindPrefix("text-red-500 font-bold p-4", "text") => "font-bold p-4"
  */
 export function stripTailwindPrefix(className: string, prefix: string): string {
-    const classes = className.split(/\s+/);
+    const classes = className.split(/\s+/).filter(Boolean);
     const filtered = classes.filter((cls) => {
-        // Match prefix- followed by anything, including arbitrary values
-        const regex = new RegExp(`^${prefix}-(\\[.*\\]|[a-zA-Z0-9/.]+)$`);
+        // Match prefix- followed by anything, including multi-segment names and arbitrary values
+        const regex = new RegExp(`^${prefix}-(\\[[^\\]]+\\]|[a-zA-Z0-9/._-]+)$`);
         return !regex.test(cls);
     });
     return filtered.join(" ");
@@ -135,21 +135,90 @@ export function generatePatches(
 ): VisualPatch[] {
     const patches: VisualPatch[] = [];
 
+    // Prioritize component/page files where JSX is likely located
+    const fileEntries = Object.entries(files).sort(([pathA], [pathB]) => {
+        const isCompA = pathA.includes("page.") || pathA.includes("components/");
+        const isCompB = pathB.includes("page.") || pathB.includes("components/");
+        if (isCompA && !isCompB) return -1;
+        if (!isCompA && isCompB) return 1;
+        return 0;
+    });
+
     for (const edit of edits) {
         if (edit.type === "text") {
-            // Find the file containing the old text and replace it
-            for (const [filePath, content] of Object.entries(files)) {
+            const trimmedOld = edit.oldText.trim();
+            if (!trimmedOld) continue;
+
+            let matched = false;
+
+            // 1. Direct or trimmed match
+            for (const [filePath, content] of fileEntries) {
                 if (content.includes(edit.oldText)) {
                     patches.push({
                         filePath,
                         oldContent: edit.oldText,
                         newContent: edit.newText,
                     });
-                    break; // Only patch first occurrence
+                    matched = true;
+                    break;
+                } else if (content.includes(trimmedOld)) {
+                    patches.push({
+                        filePath,
+                        oldContent: trimmedOld,
+                        newContent: edit.newText.trim(),
+                    });
+                    matched = true;
+                    break;
+                }
+            }
+
+            // 2. HTML entity variations (e.g. &apos;, &#39;, &amp;)
+            if (!matched) {
+                const entityVariations = [
+                    trimmedOld.replace(/'/g, "&apos;"),
+                    trimmedOld.replace(/'/g, "&#39;"),
+                    trimmedOld.replace(/&/g, "&amp;"),
+                    trimmedOld.replace(/"/g, "&quot;"),
+                ];
+                for (const variant of entityVariations) {
+                    if (variant === trimmedOld) continue;
+                    for (const [filePath, content] of fileEntries) {
+                        if (content.includes(variant)) {
+                            patches.push({
+                                filePath,
+                                oldContent: variant,
+                                newContent: edit.newText.trim(),
+                            });
+                            matched = true;
+                            break;
+                        }
+                    }
+                    if (matched) break;
+                }
+            }
+
+            // 3. Whitespace & newline tolerant matching for multiline JSX
+            if (!matched) {
+                const escaped = trimmedOld.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const flexibleRegex = new RegExp(escaped.replace(/\s+/g, "\\s+"));
+                for (const [filePath, content] of fileEntries) {
+                    const match = content.match(flexibleRegex);
+                    if (match && match[0]) {
+                        patches.push({
+                            filePath,
+                            oldContent: match[0],
+                            newContent: edit.newText.trim(),
+                        });
+                        matched = true;
+                        break;
+                    }
                 }
             }
         } else if (edit.type === "className") {
-            for (const [filePath, content] of Object.entries(files)) {
+            const trimmedOldClass = edit.oldClassName.trim();
+            if (!trimmedOldClass) continue;
+
+            for (const [filePath, content] of fileEntries) {
                 if (content.includes(edit.oldClassName)) {
                     patches.push({
                         filePath,
@@ -160,21 +229,56 @@ export function generatePatches(
                 }
             }
         } else if (edit.type === "style") {
-            // For style edits, we modify the className
+            const trimmedOriginal = edit.originalClassName.trim();
+            if (!trimmedOriginal) continue;
+
             const newClassName = applyStyleToClassName(
                 edit.originalClassName,
                 edit.property,
                 edit.value
             );
+
             if (newClassName !== edit.originalClassName) {
-                for (const [filePath, content] of Object.entries(files)) {
+                let matched = false;
+                for (const [filePath, content] of fileEntries) {
                     if (content.includes(edit.originalClassName)) {
                         patches.push({
                             filePath,
                             oldContent: edit.originalClassName,
                             newContent: newClassName,
                         });
+                        matched = true;
                         break;
+                    }
+                }
+
+                // If exact class string wasn't found, try matching normalized class tokens inside className="..."
+                if (!matched) {
+                    for (const [filePath, content] of fileEntries) {
+                        const classAttrRegex = /className=["']([^"']+)["']/g;
+                        let match: RegExpExecArray | null;
+                        while ((match = classAttrRegex.exec(content)) !== null) {
+                            const foundClass = match[1];
+                            // Check if foundClass has high overlap with original classes
+                            const originalTokens = new Set(trimmedOriginal.split(/\s+/));
+                            const foundTokens = foundClass.split(/\s+/);
+                            const intersection = foundTokens.filter((t) => originalTokens.has(t));
+                            if (intersection.length >= Math.min(originalTokens.size, 2)) {
+                                const patchedFound = applyStyleToClassName(
+                                    foundClass,
+                                    edit.property,
+                                    edit.value
+                                );
+                                patches.push({
+                                    filePath,
+                                    oldContent: foundClass,
+                                    newContent: patchedFound,
+                                });
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (matched) break;
                     }
                 }
             }

@@ -52,7 +52,7 @@ npm start
 
 ## 📝 Notes
 
-- This is a Next.js 15.3.3 application
+- This is a Next.js 16 application (App Router, Turbopack)
 - Uses Tailwind CSS for styling
 - Generated on ${new Date().toLocaleDateString()}
 
@@ -84,11 +84,11 @@ export function extractDependencies(files: FragmentFiles): Record<string, string
         }
     }
 
-    // Default Next.js dependencies
+    // Default Next.js 16 dependencies
     return {
-        "next": "^15.3.3",
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
+        "next": "^16.1.4",
+        "react": "^19.2.3",
+        "react-dom": "^19.2.3",
     };
 }
 

@@ -6,7 +6,7 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { useScroll } from "@/hooks/use-scroll";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { UserControl } from "@/components/user-control";
+import { UserControl, ThemeDialog } from "@/components/user-control";
 import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/wordmark";
 import { MobileMenu } from "./mobile-menu";
@@ -38,6 +38,7 @@ export const Navbar = () => {
           {/* Mobile Right: Auth + Menu */}
           <div className="flex items-center gap-2">
             <SignedOut>
+              <ThemeDialog />
               <SignInButton>
                 <Button size="sm">Sign in</Button>
               </SignInButton>
@@ -115,6 +116,7 @@ export const Navbar = () => {
         {/* Right: Auth */}
         <div className="flex items-center justify-end gap-2 shrink-0">
           <SignedOut>
+            <ThemeDialog />
             <SignUpButton>
               <Button variant="outline" size="sm">
                 Sign up

@@ -3,7 +3,8 @@
 import { useRef, useEffect, useMemo } from "react";
 import { useTRPC } from "@/trpc/client";
 import { Fragment, Message as PrismaMessage } from "@prisma/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
 import { MessageLoading } from "./message-loading";
@@ -27,6 +28,7 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
     const trpc = useTRPC();
     const bottomRef = useRef<HTMLDivElement>(null);
     const lastAutoSelectedId = useRef<string | null>(null);
+    const queryClient = useQueryClient();
 
     const { data: messages } = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId: projectId,
@@ -44,6 +46,26 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         () => computeAgentStatus(messages),
         [messages]
     );
+
+    const createMessage = useMutation(trpc.messages.createMessage.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(
+                trpc.messages.getMany.queryOptions({ projectId })
+            );
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    }));
+
+    const handleAutoFix = (errorContent: string) => {
+        const prompt = `Please fix this error:\n\`\`\`\n${errorContent}\n\`\`\``;
+        createMessage.mutate({
+            value: prompt,
+            projectId,
+            isAutoFix: true,
+        });
+    };
 
     useEffect(() => {
         const lastAssistantMessageWithFragment = messages.findLast(
@@ -98,6 +120,7 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
                             createdAt={message.createdAt}
                             isActiveFragment={activeFragment?.id === message.fragment?.id}
                             onFragmentClick={() => setActiveFragment(message.fragment)}
+                            onAutoFix={handleAutoFix}
                             type={message.type}
                         />
                     ))}

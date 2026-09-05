@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { auth } from "@clerk/nextjs/server";
 import { RateLimiterPrisma } from "rate-limiter-flexible";
 import { prisma } from "./db";
@@ -7,9 +8,14 @@ const PRO_POINTS = 100;
 const DURATION = 30 * 24 * 60 * 60; // 30 days
 const GENERATION_COST = 1;
 
-export async function getUsageTracker() {
+// Cache Pro access lookup per request lifecycle
+const checkProAccess = cache(async () => {
     const { has } = await auth();
-    const hasProAccess = has({ plan: "pro"});
+    return has({ plan: "pro" });
+});
+
+export async function getUsageTracker() {
+    const hasProAccess = await checkProAccess();
 
     const usageTracker = new RateLimiterPrisma({
         storeClient: prisma,
@@ -31,6 +37,23 @@ export async function consumeCredits() {
     const usageTracker = await getUsageTracker();
     const result = await usageTracker.consume(userId, GENERATION_COST);
     return result;
+}
+
+export async function refundCredits(targetUserId?: string) {
+    try {
+        let userId = targetUserId;
+        if (!userId) {
+            const authObj = await auth();
+            userId = authObj.userId ?? undefined;
+        }
+
+        if (!userId) return;
+
+        const usageTracker = await getUsageTracker();
+        await usageTracker.reward(userId, GENERATION_COST);
+    } catch (error) {
+        console.error("Failed to refund credits:", error);
+    }
 }
 
 export async function getUsageStatus() {

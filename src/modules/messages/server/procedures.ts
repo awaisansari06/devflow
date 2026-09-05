@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
 import { protectedProcedure, createTRPCRouter } from "@/trpc/init";
 import { z } from "zod";
-import { consumeCredits } from "@/lib/usage";
+import { consumeCredits, refundCredits } from "@/lib/usage";
 
 export const messageRouter = createTRPCRouter({
   getMany: protectedProcedure
@@ -37,7 +37,7 @@ export const messageRouter = createTRPCRouter({
           .min(1, { message: "Value is required" })
           .max(10000, { message: "Value is too long" }),
         projectId: z.string().min(1, { message: "Project ID is required" }),
-
+        isAutoFix: z.boolean().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -55,39 +55,77 @@ export const messageRouter = createTRPCRouter({
         });
       }
 
-      try {
-        await consumeCredits();
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Something went wrong",
-          });
+      let shouldConsumeCredits = true;
+
+      // If it's an auto-fix, verify that the last assistant message was an ERROR
+      if (input.isAutoFix) {
+        const lastAssistantMessage = await prisma.message.findFirst({
+          where: {
+            projectId: existingProject.id,
+            role: "ASSISTANT",
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        if (lastAssistantMessage?.type === "ERROR") {
+          shouldConsumeCredits = false;
         } else {
           throw new TRPCError({
-            code: "TOO_MANY_REQUESTS",
-            message: "You have reached your limit of free credits",
+            code: "BAD_REQUEST",
+            message: "Cannot auto-fix: the last message was not an error.",
           });
         }
       }
 
-      const createdMessage = await prisma.message.create({
-        data: {
-          projectId: existingProject.id,
-          content: input.value,
-          role: "USER",
-          type: "RESULT",
-        },
-      });
-
-      await inngest.send({
-        name: "code-agent/run",
-        data: {
-          value: input.value,
-          projectId: input.projectId,
+      if (shouldConsumeCredits) {
+        try {
+          await consumeCredits();
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Something went wrong",
+            });
+          } else {
+            throw new TRPCError({
+              code: "TOO_MANY_REQUESTS",
+              message: "You have reached your limit of free credits",
+            });
+          }
         }
-      });
+      }
 
-      return createdMessage;
+      try {
+        const createdMessage = await prisma.message.create({
+          data: {
+            projectId: existingProject.id,
+            content: input.value,
+            role: "USER",
+            type: "RESULT",
+          },
+        });
+
+        await inngest.send({
+          name: "code-agent/run",
+          data: {
+            value: input.value,
+            projectId: input.projectId,
+          }
+        });
+
+        return createdMessage;
+      } catch (err) {
+        if (shouldConsumeCredits) {
+          await refundCredits(ctx.auth.userId);
+        }
+        if (err instanceof TRPCError) throw err;
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to dispatch message generation",
+          cause: err,
+        });
+      }
     }),
 });

@@ -146,12 +146,26 @@ export function getVisualEditorScript(): string {
     positionOverlay(el, selectOverlay);
 
     const rect = el.getBoundingClientRect();
+
+    // Extract text content accurately:
+    // If element has no child elements, take trimmed textContent.
+    // If element has direct text child nodes, take the primary direct text.
+    let extractedText = null;
+    if (el.children.length === 0 && el.textContent) {
+      extractedText = el.textContent.trim();
+    } else {
+      const textNodes = Array.from(el.childNodes).filter(
+        (n) => n.nodeType === 3 && n.textContent && n.textContent.trim().length > 0
+      );
+      if (textNodes.length > 0) {
+        extractedText = textNodes.map((n) => n.textContent).join(' ').trim();
+      }
+    }
+
     const data = {
       selector: getCssSelector(el),
       tagName: el.tagName.toLowerCase(),
-      text: el.childNodes.length === 1 && el.childNodes[0].nodeType === 3
-        ? el.textContent
-        : null,
+      text: extractedText,
       className: el.className || '',
       styles: getComputedProps(el),
       rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
@@ -175,7 +189,18 @@ export function getVisualEditorScript(): string {
       }
       case 'apply-text': {
         if (selectedEl && msg.value !== undefined) {
-          selectedEl.textContent = msg.value;
+          if (selectedEl.children.length === 0) {
+            selectedEl.textContent = msg.value;
+          } else {
+            const firstTextNode = Array.from(selectedEl.childNodes).find(
+              (n) => n.nodeType === 3 && n.textContent && n.textContent.trim().length > 0
+            );
+            if (firstTextNode) {
+              firstTextNode.textContent = msg.value;
+            } else {
+              selectedEl.textContent = msg.value;
+            }
+          }
           positionOverlay(selectedEl, selectOverlay);
         }
         break;

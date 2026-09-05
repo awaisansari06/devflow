@@ -19,6 +19,10 @@ export function cn(...inputs: ClassValue[]) {
 export function convertFilesToTreeItems(
   files: Record<string, string>
 ): TreeItem[] {
+  if (!files || typeof files !== "object" || Object.keys(files).length === 0) {
+    return [];
+  }
+
   // Define proper type for tree structure
   interface TreeNode {
     [key: string]: TreeNode | null;

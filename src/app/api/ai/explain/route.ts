@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createAgent, gemini } from "@inngest/agent-kit";
+import { AI_MODELS } from "@/config/ai-models";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
     try {
@@ -23,7 +26,7 @@ export async function POST(req: NextRequest) {
             system: "You are a helpful code explanation assistant. Provide clear, concise explanations in the requested JSON format.",
             description: "An agent that explains code",
             model: gemini({
-                model: "gemini-2.0-flash",
+                model: AI_MODELS.EXPLAINER,
             }),
         });
 

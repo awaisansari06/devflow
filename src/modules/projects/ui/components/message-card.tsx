@@ -64,6 +64,7 @@ interface AssistantMessageProps {
     createdAt: Date;
     isActiveFragment: boolean;
     onFragmentClick: (fragment: Fragment) => void;
+    onAutoFix?: (content: string) => void;
     type: MessageType;
 }
 
@@ -73,6 +74,7 @@ const AssistantMessage = ({
     createdAt,
     isActiveFragment,
     onFragmentClick,
+    onAutoFix,
     type
 }: AssistantMessageProps) => {
 
@@ -88,7 +90,7 @@ const AssistantMessage = ({
     return (
         <div className={cn(
             "flex flex-col group px-2 pb-4",
-            type === "ERROR" && "text-red-700 dark:text-red-500",
+            type === "ERROR" && "text-destructive",
         )}>
             <div className="flex items-center gap-2 pl-2 mb-2">
                 <Logo width={18} height={18} imageClassName="shrink-0" />
@@ -106,6 +108,15 @@ const AssistantMessage = ({
                         onFragmentClick={onFragmentClick}
                     />
                 )}
+                {type === "ERROR" && onAutoFix && (
+                    <button
+                        onClick={() => onAutoFix(content)}
+                        aria-label="Automatically fix this error"
+                        className="flex items-center gap-2 border w-fit px-3 py-2 rounded-lg bg-destructive/10 hover:bg-destructive/20 text-destructive border-destructive/20 font-medium text-sm transition-colors mt-2"
+                    >
+                        <span>Fix this error ✨</span>
+                    </button>
+                )}
             </div>
 
         </div>
@@ -119,6 +130,7 @@ interface MessageCardProps {
     createdAt: Date;
     isActiveFragment: boolean;
     onFragmentClick: (fragment: Fragment) => void;
+    onAutoFix?: (content: string) => void;
     type: MessageType;
 }
 
@@ -129,6 +141,7 @@ export const MessageCard = ({
     createdAt,
     isActiveFragment,
     onFragmentClick,
+    onAutoFix,
     type
 }: MessageCardProps) => {
     if (role === "ASSISTANT") {
@@ -139,6 +152,7 @@ export const MessageCard = ({
                 createdAt={createdAt}
                 isActiveFragment={isActiveFragment}
                 onFragmentClick={onFragmentClick}
+                onAutoFix={onAutoFix}
                 type={type}
             />
         )

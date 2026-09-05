@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "postinstall": "patch-package && prisma generate"
   },
   "dependencies": {
@@ -58,7 +60,7 @@
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.27.5",
     "geist": "^1.5.1",
-    "inngest": "^3.49.1",
+    "inngest": "^3.54.2",
     "input-otp": "^1.4.2",
     "jszip": "^3.10.1",
     "lodash": "^4.17.23",
@@ -106,6 +108,8 @@
     "prisma": "^7.3.0",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   }
 }

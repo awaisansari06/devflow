@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { ColorPresets } from "@/components/color-presets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 import { hueToOklch, extractHue, isValidOklchColor } from "@/lib/theme-colors";
-import { RotateCcwIcon } from "lucide-react";
+import { RotateCcwIcon, SunIcon, MoonIcon, LaptopIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ColorPickerProps {
     value: string;
@@ -14,8 +17,14 @@ interface ColorPickerProps {
 }
 
 export function ColorPicker({ value, onChange, onReset }: ColorPickerProps) {
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
     const [hue, setHue] = useState(() => extractHue(value));
     const [customInput, setCustomInput] = useState(value);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleHueChange = (newHue: number[]) => {
         const hueValue = newHue[0];
@@ -45,7 +54,74 @@ export function ColorPicker({ value, onChange, onReset }: ColorPickerProps) {
 
     return (
         <div className="space-y-6">
-            <ColorPresets selectedColor={value} onSelect={handlePresetSelect} />
+            {/* Theme Mode Section */}
+            <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Theme Mode
+                    </Label>
+                    <span className="text-[11px] text-muted-foreground capitalize">
+                        {mounted ? theme : "system"}
+                    </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                    <Button
+                        type="button"
+                        variant={mounted && theme === "light" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("light")}
+                        className={cn(
+                            "flex items-center justify-center gap-2 h-9 transition-all cursor-pointer",
+                            mounted && theme === "light"
+                                ? "shadow-sm font-semibold"
+                                : "hover:bg-accent/60 text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <SunIcon className="size-4 shrink-0 text-amber-500" />
+                        <span className="text-xs">Light</span>
+                    </Button>
+                    <Button
+                        type="button"
+                        variant={mounted && theme === "dark" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("dark")}
+                        className={cn(
+                            "flex items-center justify-center gap-2 h-9 transition-all cursor-pointer",
+                            mounted && theme === "dark"
+                                ? "shadow-sm font-semibold"
+                                : "hover:bg-accent/60 text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <MoonIcon className="size-4 shrink-0 text-blue-400" />
+                        <span className="text-xs">Dark</span>
+                    </Button>
+                    <Button
+                        type="button"
+                        variant={mounted && theme === "system" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("system")}
+                        className={cn(
+                            "flex items-center justify-center gap-2 h-9 transition-all cursor-pointer",
+                            mounted && theme === "system"
+                                ? "shadow-sm font-semibold"
+                                : "hover:bg-accent/60 text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <LaptopIcon className="size-4 shrink-0 text-muted-foreground" />
+                        <span className="text-xs">System</span>
+                    </Button>
+                </div>
+            </div>
+
+            <Separator />
+
+            {/* Accent Color Section */}
+            <div className="space-y-3">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Accent Color
+                </Label>
+                <ColorPresets selectedColor={value} onSelect={handlePresetSelect} />
+            </div>
 
             <div className="space-y-4">
                 <div className="flex items-center justify-between">

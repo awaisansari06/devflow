@@ -172,6 +172,7 @@ export const ProjectHeader = ({ projectId }: Props) => {
                     <Button
                         variant="ghost"
                         size="sm"
+                        aria-label={`Project options for ${project.name}`}
                         className="focus-visible:ring-0 hover:bg-transparent hover:opacity-75 transition-opacity !pl-2"
                     >
                         <Logo width={18} height={18} />
